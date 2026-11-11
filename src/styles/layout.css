@@ -149,8 +149,11 @@
 
 .login-panel {
   display: grid;
-  place-items: center;
-  padding: 40px 24px;
+  grid-template-rows: 1fr auto;
+  justify-items: center;
+  align-items: center;
+  gap: 24px;
+  padding: 32px 24px 20px;
 }
 
 /* El contenido de cualquier pantalla del ingreso (AuthShell): título, introducción y formulario. */
@@ -158,6 +161,91 @@
   display: grid;
   gap: 16px;
   width: min(100%, 400px);
+}
+
+.login-logo {
+  display: flex;
+  color: var(--primary);
+}
+
+.login-logo img {
+  max-width: 72px;
+}
+
+.login-heading {
+  display: grid;
+  gap: 4px;
+}
+
+/* La fecha sobre el saludo. */
+.login-date {
+  color: var(--ink-2);
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.login-remember {
+  margin-top: -4px;
+  font-size: 0.93rem;
+}
+
+/* «¿Problemas para ingresar?»: un enlace discreto que despliega la ayuda. */
+.login-help-toggle {
+  justify-self: center;
+  margin-top: -6px;
+}
+
+.login-help {
+  margin-top: -8px;
+  padding: 12px 14px;
+  border-radius: var(--radius-field);
+  background: var(--background);
+  text-align: center;
+}
+
+.login-footer {
+  color: var(--ink-2);
+  font-size: 0.8rem;
+  font-weight: 300;
+  text-align: center;
+}
+
+/* Pantallas bajas (portátil con escalado): panel de marca y formulario más compactos para que todo quepa sin desplazarse. */
+@media (max-height: 760px) and (min-width: 761px) {
+  .login-brand {
+    gap: 12px;
+    padding: 20px 48px;
+  }
+
+  .login-hero {
+    gap: 4px;
+  }
+
+  .login-app-name {
+    font-size: clamp(2rem, 3.2vw, 2.8rem);
+  }
+
+  .login-slogan {
+    --slogan-scale: 0.6;
+    margin-top: 0;
+  }
+
+  .login-panel {
+    gap: 12px;
+    padding-block: 20px 14px;
+  }
+
+  .login-form {
+    gap: 12px;
+  }
+
+  .login-logo img,
+  .login-logo svg {
+    max-width: 52px;
+    max-height: 52px;
+  }
 }
 
 .login-title {

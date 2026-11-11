@@ -282,3 +282,50 @@
     display: none;
   }
 }
+
+/* Pantallas bajas (portátil de 14" con escalado del 125–150 %): mosaico más compacto, para que el panel de ingreso quepa sin desplazarse. */
+@media (max-height: 760px) and (min-width: 761px) {
+  .institution-summary {
+    gap: 10px;
+  }
+
+  .institution-block-login {
+    gap: 4px;
+    padding: 10px 16px 12px;
+  }
+
+  .institution-block-login h2 {
+    font-size: 0.84rem;
+  }
+
+  .institution-block-login .institution-tile {
+    width: 26px;
+    height: 26px;
+    border-radius: 7px;
+  }
+
+  .institution-block-login .institution-tile svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  .institution-block-login .institution-body p {
+    font-size: 0.86rem;
+    line-height: 1.4;
+  }
+
+  .summary-values {
+    gap: 6px;
+    padding: 10px 0 12px;
+  }
+
+  .summary-label {
+    padding: 0 16px;
+    font-size: 0.84rem;
+  }
+
+  .value-marquee li {
+    padding: 4px 12px;
+    font-size: 0.86rem;
+  }
+}

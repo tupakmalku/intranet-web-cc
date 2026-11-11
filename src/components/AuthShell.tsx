@@ -3,12 +3,15 @@ import { backend } from '../backend/index.ts'
 import { brand } from '../brand/index.ts'
 import { hasInstitutionContent } from '../domain/institution.ts'
 import { useQuery } from '../lib/useQuery.ts'
+import BrandMark from './BrandMark.tsx'
 import InstitutionSummary from './institution/InstitutionSummary.tsx'
 import SloganMark from './SloganMark.tsx'
 
 interface Props {
   /** Título grande del formulario: el saludo, «Crea tu contraseña», etc. */
   title: ReactNode
+  /** Línea pequeña sobre el título, como la fecha. */
+  eyebrow?: ReactNode
   /** Texto breve bajo el título. */
   intro?: ReactNode
   children: ReactNode
@@ -19,7 +22,7 @@ interface Props {
  * verificación en dos pasos): la identidad de la institución a un lado y el
  * formulario al otro, para que el paso de una a otra no se note.
  */
-export default function AuthShell({ title, intro, children }: Props) {
+export default function AuthShell({ title, eyebrow, intro, children }: Props) {
   // Identidad institucional (pública): misión, visión, valores y política de calidad.
   const institution = useQuery(() => backend.institution.get(), [])
   const profile = institution.data
@@ -39,10 +42,19 @@ export default function AuthShell({ title, intro, children }: Props) {
       </aside>
       <main className="login-panel">
         <div className="login-form">
-          <h1 className="login-title">{title}</h1>
+          <div className="login-logo">
+            <BrandMark size={72} />
+          </div>
+          <header className="login-heading">
+            {eyebrow && <p className="login-date">{eyebrow}</p>}
+            <h1 className="login-title">{title}</h1>
+          </header>
           {intro && <p className="login-intro">{intro}</p>}
           {children}
         </div>
+        <footer className="login-footer">
+          {brand.appName} · {brand.institution} · {new Date().getFullYear()}
+        </footer>
       </main>
     </div>
   )

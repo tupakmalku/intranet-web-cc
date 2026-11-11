@@ -10,6 +10,11 @@ export function greeting(date = new Date()): string {
   return 'Buenas noches'
 }
 
+/** La fecha larga, sin año: "miércoles, 11 de noviembre". */
+export function longDate(date = new Date()): string {
+  return date.toLocaleDateString('es-EC', { weekday: 'long', day: 'numeric', month: 'long' })
+}
+
 /** La fecha local en formato AAAA-MM-DD. */
 export function toIsoDate(date: Date): string {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
