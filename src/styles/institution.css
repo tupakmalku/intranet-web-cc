@@ -108,45 +108,56 @@
   font-size: 0.85rem;
 }
 
-/* Pantalla de ingreso: los bloques compactos sobre el color principal. */
-.login-brand-full {
-  align-content: center;
-  gap: 10px;
-  padding: 24px 40px;
-  overflow-y: auto;
-}
-
-.login-brand-full > p {
-  font-size: 1.05rem;
-}
+/* ---------- Pantalla de ingreso: mosaico y cinta de valores ---------- */
 
 .institution-summary {
   display: grid;
-  gap: 10px;
-  width: min(100%, 520px);
-  margin-top: 6px;
-  text-align: left;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  max-width: 620px;
+}
+
+.institution-summary.is-single {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* Tarjetas de vidrio que entran una tras otra. */
+.summary-card {
+  border: 1px solid color-mix(in srgb, var(--on-primary) 16%, transparent);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--on-primary) 8%, transparent);
+  backdrop-filter: blur(6px);
+  animation: login-rise 600ms ease-out both;
+  animation-delay: calc(150ms + var(--order, 0) * 120ms);
+  transition: background 200ms ease, transform 200ms ease;
+}
+
+.summary-card:hover {
+  background: color-mix(in srgb, var(--on-primary) 13%, transparent);
+  transform: translateY(-2px);
+}
+
+.summary-card.is-wide {
+  grid-column: 1 / -1;
 }
 
 .institution-block-login {
   gap: 6px;
-  padding: 10px 14px 12px;
+  padding: 12px 16px 14px;
   border: 0;
-  border-left: 3px solid var(--accent);
-  border-radius: 0 var(--radius-field) var(--radius-field) 0;
-  background: color-mix(in srgb, var(--on-primary) 8%, transparent);
+  background: none;
 }
 
 .institution-block-login h2 {
   color: var(--on-primary);
-  font-size: 0.85rem;
-  letter-spacing: 0.08em;
+  font-size: 0.82rem;
+  letter-spacing: 0.1em;
 }
 
 .institution-block-login .institution-rule {
   height: 1px;
   margin-bottom: 4px;
-  opacity: 0.6;
+  opacity: 0.5;
 }
 
 .institution-block-login .institution-tile {
@@ -156,21 +167,90 @@
 }
 
 .institution-block-login .institution-body p {
-  /* Sin el ancho máximo de los párrafos del panel de marca (.login-brand p). */
   max-width: none;
   color: var(--on-primary);
   font-size: 0.85rem;
   font-weight: 300;
   line-height: 1.45;
+  opacity: 0.95;
 }
 
-.institution-block-login .value-chips {
+.summary-values {
+  display: grid;
+  gap: 8px;
+  padding: 12px 0 14px;
+  overflow: hidden;
+}
+
+.summary-label {
+  padding: 0 16px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* Cinta de valores: la lista va dos veces y se desplaza la mitad, así el giro no se nota. Los bordes se desvanecen. */
+.value-marquee {
+  overflow: hidden;
+  mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+}
+
+.value-marquee ul {
+  display: flex;
+  gap: 8px;
+  width: max-content;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  animation: marquee linear infinite;
+}
+
+.value-marquee:hover ul {
+  animation-play-state: paused;
+}
+
+.value-marquee li {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
   gap: 6px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 30%, transparent);
+  color: var(--on-primary);
+  font-size: 0.85rem;
+  font-weight: 500;
+  white-space: nowrap;
 }
 
-.institution-block-login .value-chips li {
-  padding: 2px 9px;
-  font-size: 0.78rem;
+@keyframes marquee {
+  to {
+    transform: translateX(calc(-50% - 4px));
+  }
+}
+
+/* Sin movimiento para quien lo desactivó: los valores quedan quietos y en varias líneas. */
+@media (prefers-reduced-motion: reduce) {
+  .login-hero,
+  .summary-card {
+    animation: none;
+  }
+
+  .value-marquee {
+    mask-image: none;
+  }
+
+  .value-marquee ul {
+    flex-wrap: wrap;
+    width: auto;
+    padding: 0 16px;
+    animation: none;
+  }
+
+  .value-marquee li[aria-hidden] {
+    display: none;
+  }
 }
 
 @media (max-width: 900px) {
@@ -181,12 +261,8 @@
 
 @media (max-width: 760px) {
   /* En móvil el panel de marca es corto: solo logotipo y eslogan. */
-  .institution-summary {
+  .institution-summary,
+  .login-watermark {
     display: none;
-  }
-
-  .login-brand-full {
-    align-content: center;
-    padding: 28px 24px;
   }
 }

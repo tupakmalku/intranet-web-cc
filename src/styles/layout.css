@@ -13,65 +13,76 @@
   position: relative;
   display: grid;
   align-content: center;
-  justify-items: center;
-  gap: 20px;
-  padding: 48px 32px;
+  gap: 26px;
+  padding: 40px 48px;
   overflow: hidden;
-  background: var(--primary);
+  background:
+    radial-gradient(circle at 12% 8%, color-mix(in srgb, var(--accent) 45%, transparent), transparent 42%),
+    radial-gradient(circle at 90% 100%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 45%),
+    linear-gradient(160deg, var(--primary), var(--primary-dark));
   color: var(--on-primary);
-  text-align: center;
 }
 
-/* Dos planos inclinados como fondo del panel de marca. */
-.login-brand::before,
-.login-brand::after {
-  content: '';
+/* El isotipo de la institución, enorme y translúcido, recortado en la esquina. Se desvanece hacia abajo para que no se lea el nombre. */
+.login-watermark {
   position: absolute;
-  bottom: 0;
-  height: 62%;
-  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+  top: -12%;
+  right: -22%;
+  width: 78%;
+  max-width: 560px;
+  opacity: 0.09;
+  pointer-events: none;
+  mask-image: linear-gradient(to bottom, black 40%, transparent 62%);
 }
 
-.login-brand::before {
-  left: -30%;
-  width: 110%;
-  background: var(--primary-dark);
-}
-
-.login-brand::after {
-  right: -45%;
-  width: 110%;
-  height: 44%;
-  background: var(--accent);
-  opacity: 0.22;
-}
-
-.login-brand > * {
+.login-brand > :not(.login-watermark) {
   position: relative;
   z-index: 1;
 }
 
-.login-brand img {
-  max-width: 60%;
-  height: auto;
+.login-hero {
+  display: grid;
+  gap: 8px;
+  animation: login-rise 600ms ease-out both;
 }
 
-.login-brand h2 {
-  font-size: 1.6rem;
-  font-weight: 600;
-  line-height: 1.2;
+.login-eyebrow {
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  opacity: 0.8;
+  text-transform: uppercase;
 }
 
-.login-brand p {
-  max-width: 28ch;
-  font-size: 1.2rem;
+.login-hero h2 {
+  max-width: 14ch;
+  font-family: var(--font-headings);
+  font-size: clamp(2rem, 3.4vw, 3rem);
+  font-weight: 700;
+  line-height: 1.02;
+}
+
+/* La última palabra del eslogan, en el color de acento. */
+.login-hero h2 span {
+  color: var(--accent);
+}
+
+.login-motto {
+  max-width: 36ch;
+  font-size: 1.05rem;
   font-weight: 300;
+  opacity: 0.9;
 }
 
-.login-brand small {
-  max-width: 34ch;
-  font-size: 0.93rem;
-  opacity: 0.85;
+@keyframes login-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .login-panel {
@@ -82,6 +93,24 @@
 
 .login-form {
   width: min(100%, 380px);
+}
+
+.login-logo {
+  margin-bottom: 4px;
+}
+
+.login-logo img {
+  display: block;
+  height: auto;
+}
+
+.login-greeting {
+  margin-bottom: -10px;
+  color: var(--accent-strong);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .login-form h1 {

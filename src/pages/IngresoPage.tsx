@@ -9,6 +9,7 @@ import PasswordField from '../components/ui/PasswordField.tsx'
 import InstitutionSummary from '../components/institution/InstitutionSummary.tsx'
 import { useAuth } from '../context/auth.ts'
 import { hasInstitutionContent } from '../domain/institution.ts'
+import { greeting } from '../lib/dates.ts'
 import { useQuery } from '../lib/useQuery.ts'
 import { useSubmit } from '../lib/useSubmit.ts'
 import { isEmail } from '../lib/validation.ts'
@@ -18,8 +19,10 @@ export default function IngresoPage() {
   const { signIn, notice } = useAuth()
   // Identidad institucional (pública): misión, visión, valores y política de calidad, bajo el eslogan.
   const institution = useQuery(() => backend.institution.get(), [])
-  // Con todo el contenido, el panel de marca se compacta: logotipo más chico y el texto alineado a la izquierda.
-  const full = institution.data?.loginHighlight === 'all' && hasInstitutionContent(institution.data)
+  const showInstitution = !!institution.data && hasInstitutionContent(institution.data) && institution.data.loginHighlight !== 'none'
+  const words = brand.slogan.trim().split(/\s+/)
+  const sloganEnd = words.pop() ?? ''
+  const sloganStart = words.join(' ')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -37,19 +40,25 @@ export default function IngresoPage() {
 
   return (
     <div className="login">
-      <aside className={`login-brand${full ? ' login-brand-full' : ''}`}>
-        <BrandMark size={brand.logo ? (full ? 120 : 200) : 96} on="dark" />
-        {/* El logotipo ya lleva el nombre de la institución. */}
-        {!brand.logo && <h2>{brand.institution}</h2>}
-        <p>{brand.slogan}</p>
-        {institution.data && hasInstitutionContent(institution.data) && institution.data.loginHighlight !== 'none' ? (
-          <InstitutionSummary profile={institution.data} />
-        ) : (
-          <small>{brand.motto}</small>
-        )}
+      {/* La identidad: el eslogan como titular, el isotipo de fondo y la misión, visión, valores y política. */}
+      <aside className="login-brand">
+        {brand.logo?.onDark && <img className="login-watermark" src={brand.logo.onDark} alt="" aria-hidden="true" />}
+        <header className="login-hero">
+          <span className="login-eyebrow">{brand.institution}</span>
+          <h2>
+            {/* La última palabra del eslogan, en el color de acento. */}
+            {sloganStart} <span>{sloganEnd}</span>
+          </h2>
+        </header>
+        {showInstitution ? <InstitutionSummary profile={institution.data!} /> : <p className="login-motto">{brand.motto}</p>}
       </aside>
       <main className="login-panel">
         <form className="form login-form" onSubmit={handleSubmit} noValidate>
+          {/* El logotipo a color, sobre el nombre de la aplicación. */}
+          <div className="login-logo">
+            <BrandMark size={brand.logo ? 148 : 56} on="light" />
+          </div>
+          <span className="login-greeting">{greeting()}</span>
           <h1>{brand.appName}</h1>
           <p>Ingresa con tu correo institucional.</p>
           {/* La sesión anterior se cerró sola: por inactividad o por su duración máxima. */}

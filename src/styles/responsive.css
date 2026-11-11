@@ -43,21 +43,22 @@
     grid-template-rows: auto 1fr;
   }
 
+  /* En móvil el panel de marca es una franja corta con el eslogan; el logotipo va sobre el formulario. */
   .login-brand {
-    padding: 28px 24px;
+    padding: 24px;
     gap: 10px;
   }
 
-  .login-brand img {
-    width: 110px;
+  .login-hero h2 {
+    font-size: 1.6rem;
   }
 
-  .login-brand p {
-    font-size: 1rem;
-  }
-
-  .login-brand small {
+  .login-motto {
     display: none;
+  }
+
+  .login-logo img {
+    width: 104px;
   }
 
   .login-panel {

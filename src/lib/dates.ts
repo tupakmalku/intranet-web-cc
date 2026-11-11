@@ -2,6 +2,14 @@
 
 const pad = (n: number) => String(n).padStart(2, '0')
 
+/** Saludo según la hora: "Buenos días", "Buenas tardes" o "Buenas noches". */
+export function greeting(date = new Date()): string {
+  const hour = date.getHours()
+  if (hour >= 5 && hour < 12) return 'Buenos días'
+  if (hour >= 12 && hour < 19) return 'Buenas tardes'
+  return 'Buenas noches'
+}
+
 /** La fecha local en formato AAAA-MM-DD. */
 export function toIsoDate(date: Date): string {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
