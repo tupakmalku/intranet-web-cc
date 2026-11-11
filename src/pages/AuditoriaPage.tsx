@@ -48,7 +48,7 @@ export default function AuditoriaPage() {
       </div>
 
       {entries.error && <p className="notice notice-error">{entries.error}</p>}
-      {entries.data && !entries.data.length && <EmptyState title="Sin registros">No hay entradas que coincidan con los filtros.</EmptyState>}
+      {entries.data && !entries.data.length && <EmptyState title="Sin registros" icon="search">No hay entradas que coincidan con los filtros.</EmptyState>}
       {!!entries.data?.length && (
         <div className="card table-container">
           <table className="table audit-table">

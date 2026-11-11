@@ -29,7 +29,7 @@ export default function ProcessView({ catalog, documents, processId, typeId, onN
   const process = path.at(-1)
   if (!process) {
     return (
-      <EmptyState title="Ese proceso ya no existe" action={<button type="button" className="link" onClick={() => onNavigate(null)}>Volver al mapa de procesos</button>}>
+      <EmptyState title="Ese proceso ya no existe" icon="alert" action={<button type="button" className="link" onClick={() => onNavigate(null)}>Volver al mapa de procesos</button>}>
         Puede que lo hayan movido o eliminado del mapa.
       </EmptyState>
     )

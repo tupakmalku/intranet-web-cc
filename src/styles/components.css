@@ -435,39 +435,131 @@
   border-radius: var(--radius);
 }
 
-.card-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
+.card > .section-title {
   margin-bottom: 18px;
 }
 
-.card-header h2 {
-  font-size: 1.13rem;
-  font-weight: 600;
-  line-height: 1.25;
+/* ---------- Título de sección (SectionTitle) ---------- */
+
+/* El mismo de la pantalla de ingreso: mayúsculas, línea hasta el ícono en recuadro. */
+.section-title {
+  display: grid;
+  gap: 4px;
 }
 
-.card-header p {
+.section-title-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.section-title h2 {
+  color: var(--accent-strong);
+  font-family: var(--font-headings);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.section-title-rule {
+  flex: 1;
+  min-width: 24px;
+  height: 2px;
+  margin-bottom: 3px;
+  border-radius: 2px;
+  background: var(--accent);
+  opacity: 0.6;
+}
+
+.section-title-tile {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  background: var(--accent);
+  color: var(--on-primary);
+}
+
+.section-title-row > :last-child:not(.section-title-tile):not(.section-title-rule) {
+  flex: none;
+}
+
+.section-title-subtitle {
   color: var(--ink-2);
   font-size: 0.87rem;
   font-weight: 300;
 }
 
+.section-title-lg h2 {
+  font-size: 1.35rem;
+  letter-spacing: 0.02em;
+}
+
+.section-title-lg .section-title-rule {
+  opacity: 1;
+}
+
+.section-title-lg .section-title-tile {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+}
+
+.section-title-sm h2 {
+  font-size: 0.92rem;
+  letter-spacing: 0.1em;
+}
+
+.section-title-sm .section-title-rule {
+  height: 1px;
+  margin-bottom: 4px;
+}
+
+.section-title-sm .section-title-tile {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+}
+
+.section-title.is-inverse h2 {
+  color: var(--on-primary);
+}
+
+.section-title.is-inverse .section-title-rule {
+  opacity: 0.5;
+}
+
+/* Con el mismo fondo y recuadro de ícono que los bloques de la institución. */
 .empty-state {
   display: grid;
   justify-items: center;
   gap: 10px;
-  padding: 56px 24px;
-  background: var(--surface);
-  border: 1px dashed var(--border-field);
+  padding: 40px 24px;
+  background:
+    radial-gradient(circle at 100% 0%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 55%),
+    var(--surface);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
   text-align: center;
 }
 
+.empty-state-tile {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  margin-bottom: 4px;
+  border-radius: 14px;
+  background: var(--accent-050);
+  color: var(--accent-strong);
+}
+
 .empty-state h2 {
-  font-size: 1.27rem;
+  font-size: 1.2rem;
   font-weight: 600;
 }
 
@@ -925,10 +1017,6 @@
   gap: 14px;
 }
 
-.settings-card h2 {
-  font-size: 1.15rem;
-  font-weight: 600;
-}
 
 .settings-actions {
   display: flex;
@@ -1106,21 +1194,6 @@
 }
 
 /* Tarjeta centrada que bloquea el paso hasta completar algo, como cambiar la contraseña temporal. */
-.gate {
-  display: grid;
-  gap: 16px;
-  width: min(100%, 460px);
-  padding: 32px;
-}
-
-.gate h1 {
-  font-size: 1.5rem;
-}
-
-.gate > p {
-  color: var(--ink-2);
-}
-
 .gate-actions {
   display: flex;
   justify-content: flex-end;
@@ -1146,11 +1219,4 @@
   letter-spacing: 0.06em;
   overflow-wrap: anywhere;
   user-select: all;
-}
-
-.centered-screen {
-  display: grid;
-  place-items: center;
-  min-height: 100dvh;
-  padding: 24px;
 }

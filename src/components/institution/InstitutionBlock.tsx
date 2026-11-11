@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
-import Icon, { type IconName } from '../ui/Icon.tsx'
+import type { IconName } from '../ui/Icon.tsx'
+import SectionTitle from '../ui/SectionTitle.tsx'
 
 interface Props {
   title: string
@@ -12,20 +13,15 @@ interface Props {
 }
 
 /**
- * Bloque de la identidad institucional: título en mayúsculas con una línea
- * que llega hasta el ícono en recuadro, y el contenido debajo. Sigue el estilo
- * de la pieza gráfica de misión, visión y valores de la institución.
+ * Bloque de la identidad institucional: el título de sección (SectionTitle)
+ * con su ícono y el contenido debajo. Sigue el estilo de la pieza gráfica de
+ * misión, visión y valores de la institución.
  */
 export default function InstitutionBlock({ title, icon, wide, variant = 'page', children }: Props) {
+  const login = variant === 'login'
   return (
     <section className={`institution-block institution-block-${variant}${wide ? ' is-wide' : ''}`}>
-      <header>
-        <h2>{title}</h2>
-        <span className="institution-rule" aria-hidden="true" />
-        <span className="institution-tile" aria-hidden="true">
-          <Icon name={icon} size={variant === 'login' ? 18 : 26} />
-        </span>
-      </header>
+      <SectionTitle title={title} icon={icon} size={login ? 'sm' : 'lg'} inverse={login} />
       <div className="institution-body">{children}</div>
     </section>
   )

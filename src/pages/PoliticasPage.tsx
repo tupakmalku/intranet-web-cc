@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { backend } from '../backend/index.ts'
 import { sessionSettings } from '../brand/index.ts'
 import Button from '../components/ui/Button.tsx'
+import SectionTitle from '../components/ui/SectionTitle.tsx'
 import RadioList from '../components/ui/RadioList.tsx'
 import { useAuth } from '../context/auth.ts'
 import { useToast } from '../context/toasts.ts'
@@ -43,7 +44,7 @@ export default function PoliticasPage() {
   return (
     <div className="settings-stack">
       <section className="card settings-card">
-        <h2>Verificación en dos pasos</h2>
+        <SectionTitle title="Verificación en dos pasos" icon="shield" />
         <p className="help">
           Además de la contraseña, se pide un código de 6 dígitos de una aplicación autenticadora en el teléfono. Si alguien roba una contraseña, no le basta para
           entrar.
@@ -68,7 +69,7 @@ export default function PoliticasPage() {
       </section>
 
       <section className="card settings-card">
-        <h2>Caducidad de la sesión</h2>
+        <SectionTitle title="Caducidad de la sesión" icon="clock" />
         <dl className="settings-facts">
           <div>
             <dt>Sin actividad</dt>

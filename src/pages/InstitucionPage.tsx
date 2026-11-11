@@ -41,7 +41,7 @@ export default function InstitucionPage() {
       )}
 
       {!hasInstitutionContent(profile) ? (
-        <EmptyState title="Todavía no hay contenido">
+        <EmptyState title="Todavía no hay contenido" icon="building">
           {canEdit ? 'Pulsa Editar para escribir la misión, la visión, los valores y la política de calidad.' : 'La institución aún no publicó su misión y visión.'}
         </EmptyState>
       ) : (

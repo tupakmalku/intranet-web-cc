@@ -130,9 +130,9 @@ export default function IntranetPage({ view }: { view: IntranetView }) {
       const list = tab === 'mios' ? mine : toReview
       if (list.length) return <DocumentTable documents={list} showProcess showStatus showOwner={tab === 'aprobar'} {...tableActions} />
       return tab === 'mios' ? (
-        <EmptyState title="No has subido documentos">Los documentos que envíes a aprobación aparecerán aquí con su estado.</EmptyState>
+        <EmptyState title="No has subido documentos" icon="file">Los documentos que envíes a aprobación aparecerán aquí con su estado.</EmptyState>
       ) : (
-        <EmptyState title="Nada por aprobar">Cuando un área envíe un documento a la intranet, aparecerá aquí para revisarlo.</EmptyState>
+        <EmptyState title="Nada por aprobar" icon="tasks">Cuando un área envíe un documento a la intranet, aparecerá aquí para revisarlo.</EmptyState>
       )
     }
 
@@ -142,7 +142,7 @@ export default function IntranetPage({ view }: { view: IntranetView }) {
       return found.length ? (
         <DocumentTable documents={found} showProcess {...tableActions} />
       ) : (
-        <EmptyState title="Sin resultados">Ningún documento publicado coincide con la búsqueda. Prueba con otras palabras.</EmptyState>
+        <EmptyState title="Sin resultados" icon="search">Ningún documento publicado coincide con la búsqueda. Prueba con otras palabras.</EmptyState>
       )
     }
     if (processId) {

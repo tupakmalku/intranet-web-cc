@@ -1,25 +1,22 @@
 import type { ReactNode } from 'react'
+import type { IconName } from './Icon.tsx'
+import SectionTitle from './SectionTitle.tsx'
 
 interface Props {
   title: string
   subtitle?: string
+  icon?: IconName
   /** Contenido a la derecha del título: un botón o un enlace. */
   action?: ReactNode
   className?: string
   children: ReactNode
 }
 
-/** Bloque de contenido con título, usado en el panel. */
-export default function Card({ title, subtitle, action, className = '', children }: Props) {
+/** Bloque de contenido con el título de sección de la aplicación. */
+export default function Card({ title, subtitle, icon, action, className = '', children }: Props) {
   return (
     <section className={`card ${className}`}>
-      <header className="card-header">
-        <div>
-          <h2>{title}</h2>
-          {subtitle && <p>{subtitle}</p>}
-        </div>
-        {action}
-      </header>
+      <SectionTitle title={title} subtitle={subtitle} icon={icon} action={action} />
       {children}
     </section>
   )

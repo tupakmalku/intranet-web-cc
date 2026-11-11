@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { backend } from '../backend/index.ts'
+import AuthShell from '../components/AuthShell.tsx'
 import MfaSetup from '../components/MfaSetup.tsx'
 import Button from '../components/ui/Button.tsx'
 import CodeField from '../components/ui/CodeField.tsx'
@@ -31,40 +32,37 @@ export default function VerificacionPage() {
 
   if (!session?.mfa.enrolled) {
     return (
-      <div className="centered-screen">
-        <main className="card gate">
-          <h1>Protege tu cuenta</h1>
-          <p>
-            {session?.user.fullName}, la institución pide la <strong>verificación en dos pasos</strong> para tu rol: además de tu contraseña,
-            al ingresar escribirás un código de tu teléfono.
-          </p>
-          <MfaSetup onDone={() => void refresh()} secondaryAction={leave} />
-        </main>
-      </div>
+      <AuthShell
+        title="Protege tu cuenta"
+        intro={
+          <>
+            {session?.user.fullName}, la institución pide la <strong>verificación en dos pasos</strong> para tu rol: además de tu contraseña, al ingresar
+            escribirás un código de tu teléfono.
+          </>
+        }
+      >
+        <MfaSetup onDone={() => void refresh()} secondaryAction={leave} />
+      </AuthShell>
     )
   }
 
   return (
-    <div className="centered-screen">
-      <main className="card gate">
-        <h1>Verificación en dos pasos</h1>
-        <p>Abre tu aplicación autenticadora y escribe el código de 6 dígitos de {session.user.email}.</p>
-        <form className="form" onSubmit={handleSubmit} noValidate>
-          <CodeField id="mfa-code" value={code} onChange={setCode} error={error} />
-          {failure && (
-            <p className="notice notice-error" role="alert">
-              {failure}
-            </p>
-          )}
-          <p className="help">¿Perdiste el teléfono? Pide a quien gestiona usuarios que restablezca tu verificación en dos pasos.</p>
-          <div className="gate-actions">
-            {leave}
-            <Button type="submit" disabled={saving}>
-              Verificar
-            </Button>
-          </div>
-        </form>
-      </main>
-    </div>
+    <AuthShell title="Verificación en dos pasos" intro={`Abre tu aplicación autenticadora y escribe el código de 6 dígitos de ${session.user.email}.`}>
+      <form className="form" onSubmit={handleSubmit} noValidate>
+        <CodeField id="mfa-code" value={code} onChange={setCode} error={error} />
+        {failure && (
+          <p className="notice notice-error" role="alert">
+            {failure}
+          </p>
+        )}
+        <p className="help">¿Perdiste el teléfono? Pide a quien gestiona usuarios que restablezca tu verificación en dos pasos.</p>
+        <div className="gate-actions">
+          {leave}
+          <Button type="submit" disabled={saving}>
+            Verificar
+          </Button>
+        </div>
+      </form>
+    </AuthShell>
   )
 }
