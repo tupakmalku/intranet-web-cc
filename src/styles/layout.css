@@ -48,7 +48,7 @@
 
 .login-app-name {
   font-family: var(--font-headings);
-  font-size: clamp(2.8rem, 5vw, 4.4rem);
+  font-size: clamp(2.24rem, 4vw, 3.52rem);
   font-weight: 700;
   letter-spacing: -0.01em;
   line-height: 0.95;
@@ -63,6 +63,7 @@
 }
 
 .login-slogan {
+  --slogan-scale: 0.75;
   margin-top: 4px;
   animation: login-rise 600ms ease-out 700ms both;
 }
@@ -78,7 +79,7 @@
 /* Sin pieza gráfica configurada: texto con la última palabra en el color de acento. */
 .slogan-plain {
   font-family: var(--font-headings);
-  font-size: clamp(1.25rem, 2vw, 1.6rem);
+  font-size: calc(clamp(1.25rem, 2vw, 1.6rem) * var(--slogan-scale, 1));
   font-weight: 600;
   line-height: 1.15;
 }
@@ -87,7 +88,8 @@
   color: var(--accent);
 }
 
-/* Como la pieza de la institución: la parte destacada en un recuadro y el resto en manuscrita. */
+/* Como la pieza de la institución: la parte destacada en un recuadro y el resto en manuscrita.
+   --slogan-scale reduce o agranda la pieza entera según dónde se use. */
 .slogan-mark {
   display: grid;
   justify-items: start;
@@ -100,7 +102,7 @@
   background: var(--on-primary);
   color: var(--primary);
   font-family: var(--font-headings);
-  font-size: clamp(1.15rem, 1.9vw, 1.5rem);
+  font-size: calc(clamp(1.15rem, 1.9vw, 1.5rem) * var(--slogan-scale, 1));
   font-style: italic;
   font-weight: 800;
   letter-spacing: 0.02em;
@@ -114,7 +116,7 @@
   padding-bottom: 10px;
   color: var(--on-primary);
   font-family: var(--brand-font-script, cursive);
-  font-size: clamp(1.9rem, 3.3vw, 2.7rem);
+  font-size: calc(clamp(1.9rem, 3.3vw, 2.7rem) * var(--slogan-scale, 1));
   line-height: 1.15;
   white-space: nowrap;
 }

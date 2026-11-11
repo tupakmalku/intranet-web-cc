@@ -50,15 +50,15 @@
   }
 
   .login-app-name {
-    font-size: 2.4rem;
+    font-size: 1.92rem;
   }
 
   .slogan-highlight {
-    font-size: 1rem;
+    font-size: calc(1rem * var(--slogan-scale, 1));
   }
 
   .slogan-script {
-    font-size: 1.7rem;
+    font-size: calc(1.7rem * var(--slogan-scale, 1));
   }
 
   /* El isotipo de fondo, recortado a la derecha de la franja, detrás del texto. */
