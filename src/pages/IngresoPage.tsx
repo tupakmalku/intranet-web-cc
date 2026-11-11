@@ -1,7 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { backend } from '../backend/index.ts'
 import { brand } from '../brand/index.ts'
-import BrandMark from '../components/BrandMark.tsx'
 import Button from '../components/ui/Button.tsx'
 import Field from '../components/ui/Field.tsx'
 import Icon from '../components/ui/Icon.tsx'
@@ -40,26 +39,23 @@ export default function IngresoPage() {
 
   return (
     <div className="login">
-      {/* La identidad: el eslogan como titular, el isotipo de fondo y la misión, visión, valores y política. */}
+      {/* La identidad: el nombre de la aplicación en grande, la institución, el eslogan, el isotipo de fondo y la misión, visión, valores y política. */}
       <aside className="login-brand">
         {brand.logo?.onDark && <img className="login-watermark" src={brand.logo.onDark} alt="" aria-hidden="true" />}
         <header className="login-hero">
+          <h1 className="login-app-name">{brand.appName}</h1>
           <span className="login-eyebrow">{brand.institution}</span>
-          <h2>
+          <p className="login-slogan">
             {/* La última palabra del eslogan, en el color de acento. */}
             {sloganStart} <span>{sloganEnd}</span>
-          </h2>
+          </p>
         </header>
         {showInstitution ? <InstitutionSummary profile={institution.data!} /> : <p className="login-motto">{brand.motto}</p>}
       </aside>
       <main className="login-panel">
         <form className="form login-form" onSubmit={handleSubmit} noValidate>
-          {/* El logotipo a color, sobre el nombre de la aplicación. */}
-          <div className="login-logo">
-            <BrandMark size={brand.logo ? 148 : 56} on="light" />
-          </div>
-          <span className="login-greeting">{greeting()}</span>
-          <h1>{brand.appName}</h1>
+          {/* El nombre de la aplicación ya está, en grande, en el panel de marca: aquí, el saludo. */}
+          <h2 className="login-title">{greeting()}</h2>
           <p>Ingresa con tu correo institucional.</p>
           {/* La sesión anterior se cerró sola: por inactividad o por su duración máxima. */}
           {notice && !failure && (

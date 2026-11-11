@@ -46,24 +46,32 @@
   animation: login-rise 600ms ease-out both;
 }
 
+.login-app-name {
+  font-family: var(--font-headings);
+  font-size: clamp(2.8rem, 5vw, 4.4rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 0.95;
+}
+
 .login-eyebrow {
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   font-weight: 500;
   letter-spacing: 0.14em;
-  opacity: 0.8;
+  opacity: 0.85;
   text-transform: uppercase;
 }
 
-.login-hero h2 {
-  max-width: 14ch;
+.login-slogan {
+  margin-top: 6px;
   font-family: var(--font-headings);
-  font-size: clamp(2rem, 3.4vw, 3rem);
-  font-weight: 700;
-  line-height: 1.02;
+  font-size: clamp(1.25rem, 2vw, 1.6rem);
+  font-weight: 600;
+  line-height: 1.15;
 }
 
 /* La última palabra del eslogan, en el color de acento. */
-.login-hero h2 span {
+.login-slogan span {
   color: var(--accent);
 }
 
@@ -95,25 +103,7 @@
   width: min(100%, 380px);
 }
 
-.login-logo {
-  margin-bottom: 4px;
-}
-
-.login-logo img {
-  display: block;
-  height: auto;
-}
-
-.login-greeting {
-  margin-bottom: -10px;
-  color: var(--accent-strong);
-  font-size: 0.85rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.login-form h1 {
+.login-title {
   font-size: 2rem;
   font-weight: 600;
   line-height: 1.15;

@@ -49,16 +49,16 @@
     gap: 10px;
   }
 
-  .login-hero h2 {
-    font-size: 1.6rem;
+  .login-app-name {
+    font-size: 2.4rem;
+  }
+
+  .login-slogan {
+    font-size: 1.1rem;
   }
 
   .login-motto {
     display: none;
-  }
-
-  .login-logo img {
-    width: 104px;
   }
 
   .login-panel {
