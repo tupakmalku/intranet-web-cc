@@ -4,7 +4,7 @@
 
 .login {
   display: grid;
-  grid-template-columns: minmax(320px, 5fr) 7fr;
+  grid-template-columns: minmax(320px, 13fr) 11fr;
   min-height: 100dvh;
   background: var(--surface);
 }
@@ -13,8 +13,8 @@
   position: relative;
   display: grid;
   align-content: center;
-  gap: 26px;
-  padding: 40px 48px;
+  gap: 20px;
+  padding: 28px 56px;
   overflow: hidden;
   background:
     radial-gradient(circle at 12% 8%, color-mix(in srgb, var(--accent) 45%, transparent), transparent 42%),
