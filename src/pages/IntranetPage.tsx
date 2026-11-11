@@ -110,7 +110,8 @@ export default function IntranetPage({ view }: { view: IntranetView }) {
     }
   }
 
-  const words = normalize(search).split(/\s+/).filter(Boolean)
+  // Solo el mapa de procesos tiene buscador.
+  const words = tab === 'mapa' ? normalize(search).split(/\s+/).filter(Boolean) : []
   const matches = (d: IntranetDocument) => {
     const processText = processPath(catalog.processes, d.processId)
       .map((p) => `${p.code} ${p.name}`)
@@ -126,11 +127,9 @@ export default function IntranetPage({ view }: { view: IntranetView }) {
     if (tab === 'config') return <IntranetSettings catalog={catalog} documents={documents} onChanged={reload} />
 
     if (tab === 'mios' || tab === 'aprobar') {
-      const list = (tab === 'mios' ? mine : toReview).filter(matches)
+      const list = tab === 'mios' ? mine : toReview
       if (list.length) return <DocumentTable documents={list} showProcess showStatus showOwner={tab === 'aprobar'} {...tableActions} />
-      return words.length ? (
-        <EmptyState title="Nada que mostrar aquí">Ningún documento coincide con la búsqueda.</EmptyState>
-      ) : tab === 'mios' ? (
+      return tab === 'mios' ? (
         <EmptyState title="No has subido documentos">Los documentos que envíes a aprobación aparecerán aquí con su estado.</EmptyState>
       ) : (
         <EmptyState title="Nada por aprobar">Cuando un área envíe un documento a la intranet, aparecerá aquí para revisarlo.</EmptyState>
@@ -165,21 +164,18 @@ export default function IntranetPage({ view }: { view: IntranetView }) {
 
   return (
     <>
-      {/* El buscador va en la cabecera, en lugar del título. Desde Configuración, escribir lleva al mapa con los resultados. */}
-      {topbarSlot &&
+      {/* Solo el mapa de procesos tiene buscador: va en la cabecera, en lugar del título. Las demás vistas muestran su título. */}
+      {tab === 'mapa' &&
+        topbarSlot &&
         createPortal(
           <label className="input-box search-box topbar-search">
             <Icon name="search" size={18} />
             <span className="sr-only">Buscar documentos</span>
             <input
               type="search"
-              placeholder={tab === 'mios' || tab === 'aprobar' ? 'Buscar por código, título o proceso' : 'Buscar en toda la intranet: código, título, proceso…'}
+              placeholder="Buscar en toda la intranet: código, título, proceso…"
               value={search}
-              onChange={(e) => {
-                const value = e.target.value
-                if (tab === 'config') go({})
-                setSearch(value)
-              }}
+              onChange={(e) => setSearch(e.target.value)}
             />
           </label>,
           topbarSlot,
