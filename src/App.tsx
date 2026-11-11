@@ -59,7 +59,8 @@ function Screens() {
           <Route path="intranet" element={<LegacyIntranetRedirect />} />
           {can('documents.publish') && <Route path={VIEW_PATHS.mios.slice(1)} element={<IntranetPage view="mios" />} />}
           {can('documents.approve') && <Route path={VIEW_PATHS.aprobar.slice(1)} element={<IntranetPage view="aprobar" />} />}
-          {can('intranet.configure') && <Route path={VIEW_PATHS.config.slice(1)} element={<IntranetPage view="config" />} />}
+          {/* Configuración tiene dos pestañas: el mapa (/configuracion) y la institución (/configuracion/institucion). */}
+          {can('intranet.configure') && <Route path={`${VIEW_PATHS.config.slice(1)}/:section?`} element={<IntranetPage view="config" />} />}
           {(can('users.manage') || can('roles.manage') || can('audit.view')) && (
             <Route path="seguridad" element={<SeguridadPage />}>
               <Route index element={<Navigate to={can('users.manage') ? 'usuarios' : can('roles.manage') ? 'roles' : 'auditoria'} replace />} />

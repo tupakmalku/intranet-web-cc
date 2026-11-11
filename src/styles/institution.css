@@ -270,15 +270,6 @@
   color: var(--ink-2);
 }
 
-/* Los textos largos, en dos líneas: el texto completo está en Editar y en el ingreso. */
-.institution-settings-text {
-  display: -webkit-box;
-  overflow: hidden;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-}
-
 @media (max-width: 900px) {
   .institution-settings {
     grid-template-columns: minmax(0, 1fr);

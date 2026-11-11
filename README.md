@@ -108,7 +108,7 @@ Word se acepta solo en .docx: el formato .doc antiguo no se puede mostrar en el 
 ### Nuestra institución
 
 - La **misión, visión, valores y política de calidad** se muestran en la **pantalla de ingreso**, con el estilo de la pieza gráfica de la institución (título, línea e ícono en recuadro).
-- Se editan en **Configuración > Nuestra institución** (botón **Editar**), con el permiso *Configurar la intranet*, sin tocar el código. Queda en la auditoría.
+- Se editan en la pestaña **Configuración > Nuestra institución** (botón **Editar**), con el permiso *Configurar la intranet*, sin tocar el código. Queda en la auditoría.
 - La política de calidad puede enlazar su **documento oficial** de la intranet (por código): siempre se abre la versión publicada vigente.
 - En la **pantalla de ingreso**, bajo el eslogan, se muestra por defecto **todo** (misión, visión, valores y política de calidad) en bloques compactos; al editar se puede elegir solo la misión, solo los valores o nada. Es información pública: se lee sin sesión. En móvil se muestra solo el logotipo y el eslogan.
 - Si no tiene contenido, la pantalla de ingreso muestra solo el lema.

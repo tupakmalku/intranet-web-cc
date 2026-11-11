@@ -51,7 +51,7 @@ export default function InstitutionSettings({ documents }: Props) {
           {texts.map((t) => (
             <div key={t.label}>
               <dt>{t.label}</dt>
-              <dd className="institution-settings-text">{t.text || 'Sin escribir'}</dd>
+              <dd>{t.text || 'Sin escribir'}</dd>
             </div>
           ))}
           <div>
