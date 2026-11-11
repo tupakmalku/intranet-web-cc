@@ -23,6 +23,10 @@ export const PERMISSIONS: Record<Permission, { name: string; detail: string }> =
     name: 'Configurar la intranet',
     detail: 'Mantener el mapa de procesos (macroprocesos, procesos y subprocesos) y los tipos de documento.',
   },
+  'audit.view': {
+    name: 'Consultar la auditoría',
+    detail: 'Ver quién hizo qué y cuándo: ingresos, cambios de usuarios y roles, y publicación, lectura y descarga de documentos.',
+  },
 }
 
 export const ALL_PERMISSIONS = Object.keys(PERMISSIONS) as Permission[]

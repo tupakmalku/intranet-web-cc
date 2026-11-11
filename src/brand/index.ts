@@ -2,7 +2,7 @@ import type { CSSProperties } from 'react'
 import ambato from './institutions/ambato.ts'
 import demo from './institutions/demo.ts'
 import { loadBrandOverride, type BrandOverride } from './runtime.ts'
-import type { BirthdaySettings, Brand, BrandColors, ProcessTone } from './types.ts'
+import type { BirthdaySettings, Brand, BrandColors, ProcessTone, SessionSettings } from './types.ts'
 
 /**
  * Instituciones compiladas. Para agregar una: se crea su archivo en
@@ -52,6 +52,20 @@ function merge(base: Brand, override: BrandOverride): Brand {
     typography: { ...base.typography, ...override.typography },
     shape: { ...base.shape, ...override.shape },
     birthdays: { ...base.birthdays, ...override.birthdays },
+    session: { ...base.session, ...override.session },
+  }
+}
+
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, Math.round(value)))
+
+/** Caducidad de la sesión de la institución activa, con los valores por defecto aplicados. */
+export function sessionSettings(): Required<SessionSettings> {
+  const idleMinutes = clamp(brand.session?.idleMinutes ?? 15, 1, 480)
+  return {
+    idleMinutes,
+    maxHours: clamp(brand.session?.maxHours ?? 10, 1, 24),
+    // El aviso nunca dura más que la mitad del tiempo de inactividad.
+    warningSeconds: Math.min(clamp(brand.session?.warningSeconds ?? 60, 10, 300), idleMinutes * 30),
   }
 }
 

@@ -30,7 +30,7 @@ const MAX_ROWS = 2000
  * siempre puede capturarlo. Lo que impide el acceso son los permisos del backend.
  */
 export default function DocumentViewer({ document, canDownload, onClose }: Props) {
-  const file = useQuery(() => backend.documents.getFile(document), [document.id, document.path])
+  const file = useQuery(() => backend.documents.getFile(document, 'view'), [document.id, document.path])
   const kind = viewerKindOf(document.fileName)
   const readOnly = !canDownload
 

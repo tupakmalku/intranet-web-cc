@@ -1,10 +1,16 @@
-import type { DocumentType, IntranetDocument, Permission, ProcessNode, Role, User } from '../../domain/types.ts'
+import type { AuditEntry, DocumentType, IntranetDocument, Permission, ProcessNode, Role, SecuritySettings, User } from '../../domain/types.ts'
 import { ALL_PERMISSIONS } from '../../domain/labels.ts'
 import { seedDocuments, seedDocumentTypes, seedProcesses } from './intranetSeed.ts'
 
 /* Datos de ejemplo del backend local: roles, un usuario por rol, el mapa de procesos y documentos de la intranet. */
 
-export type StoredUser = User & { password: string }
+export type StoredUser = User & {
+  password: string
+  /** Clave de la aplicación autenticadora (base32), si la configuró. */
+  mfaSecret?: string | null
+  /** Configuración empezada y todavía no confirmada con un código. */
+  mfaPending?: { factorId: string; secret: string } | null
+}
 
 export interface Db {
   roles: Role[]
@@ -13,6 +19,14 @@ export interface Db {
   processes: ProcessNode[]
   documentTypes: DocumentType[]
   sessionUserId: string | null
+  /** Cuándo ingresó el usuario de la sesión (ISO), para su duración máxima. */
+  sessionStartedAt?: string | null
+  /** La sesión ya ingresó el código de verificación en dos pasos. */
+  sessionVerified?: boolean
+  /** Configuración de seguridad (en Supabase, la tabla app_settings). */
+  settings?: SecuritySettings
+  /** Registro de auditoría, del más antiguo al más reciente. */
+  audit?: AuditEntry[]
 }
 
 /** Contraseña temporal de todos los usuarios de ejemplo. */
@@ -25,7 +39,7 @@ export const DEFAULT_ROLES: { id: string; name: string; description: string; per
     id: 'role-security',
     name: 'Oficial de seguridad de la información',
     description: 'Gestiona usuarios y restablece contraseñas.',
-    permissions: ['users.manage'],
+    permissions: ['users.manage', 'audit.view'],
   },
   {
     id: 'role-manager',
@@ -136,5 +150,10 @@ export function createSeed(): Db {
     documentTypes: seedDocumentTypes(),
     documents: seedDocuments(MANAGER, APPROVER),
     sessionUserId: null,
+    sessionStartedAt: null,
+    // En la demostración, la verificación en dos pasos es opcional para no exigir una aplicación al probar.
+    // Se cambia en Seguridad > Políticas. En Supabase, por defecto es obligatoria para quien gestiona usuarios o roles.
+    settings: { mfaPolicy: 'off' },
+    audit: [],
   }
 }

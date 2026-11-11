@@ -40,6 +40,8 @@ const demo: Brand = {
   // ],
   // Cumpleaños (estos son los valores por defecto). enabled: false los apaga por completo.
   // birthdays: { enabled: true, celebration: true, soonDays: 3 },
+  // Caducidad de la sesión (estos son los valores por defecto).
+  // session: { idleMinutes: 15, maxHours: 10, warningSeconds: 60 },
 }
 
 export default demo

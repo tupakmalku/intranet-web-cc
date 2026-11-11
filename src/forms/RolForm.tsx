@@ -4,7 +4,9 @@ import Checkbox from '../components/ui/Checkbox.tsx'
 import Field from '../components/ui/Field.tsx'
 import FormModal from '../components/ui/FormModal.tsx'
 import TextArea from '../components/ui/TextArea.tsx'
+import { useSession } from '../context/auth.ts'
 import { ALL_PERMISSIONS, PERMISSIONS } from '../domain/labels.ts'
+import { grantablePermissions } from '../domain/permissions.ts'
 import type { Permission, Role } from '../domain/types.ts'
 import { useSubmit } from '../lib/useSubmit.ts'
 
@@ -24,6 +26,8 @@ export default function RolForm({ role, ownRole = false, onSaved, onClose }: Pro
   const [permissions, setPermissions] = useState<Permission[]>(role?.permissions ?? [])
   const [errors, setErrors] = useState<Record<string, string>>({})
   const { saving, failure, submit } = useSubmit()
+  // Nadie otorga lo que no tiene: los permisos que el usuario no tiene no se pueden marcar.
+  const grantable = grantablePermissions(useSession())
 
   function toggle(permission: Permission, granted: boolean) {
     setPermissions(granted ? [...permissions, permission] : permissions.filter((p) => p !== permission))
@@ -62,6 +66,7 @@ export default function RolForm({ role, ownRole = false, onSaved, onClose }: Pro
       />
       <fieldset className="checkbox-group" aria-describedby={errors.permissions ? 'role-permissions-error' : undefined}>
         <legend>Permisos</legend>
+        {ALL_PERMISSIONS.some((p) => !grantable.includes(p)) && <p className="help">Solo puedes dar los permisos que tiene tu rol.</p>}
         {ALL_PERMISSIONS.map((permission) => (
           <Checkbox
             key={permission}
@@ -69,7 +74,7 @@ export default function RolForm({ role, ownRole = false, onSaved, onClose }: Pro
             detail={PERMISSIONS[permission].detail}
             checked={permissions.includes(permission)}
             onChange={(e) => toggle(permission, e.target.checked)}
-            disabled={ownRole && permission === 'roles.manage'}
+            disabled={(ownRole && permission === 'roles.manage') || !grantable.includes(permission)}
           />
         ))}
       </fieldset>

@@ -37,10 +37,35 @@ Deno.serve(async (request) => {
   const admin = createClient(url, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!)
   const body = await request.json().catch(() => ({}))
 
+  // Nadie otorga lo que no tiene (ver src/domain/permissions.ts y la migración de seguridad):
+  // solo se asigna un rol, o se gestiona a un usuario, cuyos permisos ya tiene quien llama.
+  const canGrant = async (roleId: unknown) => {
+    const { data, error } = await caller.rpc('can_grant_role', { target_role: String(roleId ?? '') })
+    return !error && data === true
+  }
+  const { data: me } = await caller.auth.getUser()
+
+  /** Deja constancia en la auditoría, a nombre de quien llamó a la función. */
+  const audit = async (action: string, targetName: string, detail = '') => {
+    const { error } = await admin.rpc('audit', { action, target_name: targetName, detail, actor: me.user?.id ?? null })
+    if (error) console.error(error)
+  }
+
+  /** El usuario a gestionar, si quien llama puede (nadie gestiona a alguien con más permisos). */
+  async function manageable(userId: string) {
+    const target = await admin.from('profiles').select('role_id, full_name, email').eq('id', userId).maybeSingle()
+    if (!target.data) return { error: json({ error: 'El usuario ya no existe.' }, 404) }
+    if (userId !== me.user?.id && !(await canGrant(target.data.role_id))) {
+      return { error: json({ error: 'No puedes gestionar a un usuario con permisos que tú no tienes.' }, 403) }
+    }
+    return { target: target.data }
+  }
+
   if (body.action === 'create') {
     const email = String(body.email ?? '').trim().toLowerCase()
     const fullName = String(body.fullName ?? '').trim()
     if (!email || !fullName || !body.roleId) return json({ error: 'Faltan datos del usuario.' }, 400)
+    if (!(await canGrant(body.roleId))) return json({ error: 'No puedes asignar un rol con permisos que tú no tienes.' }, 403)
     // Cumpleaños opcional, MM-DD; la base de datos valida además que el día exista en el mes.
     const birthday = typeof body.birthday === 'string' && /^\d{2}-\d{2}$/.test(body.birthday) ? body.birthday : null
 
@@ -62,11 +87,15 @@ Deno.serve(async (request) => {
       await admin.auth.admin.deleteUser(created.data.user.id)
       return json({ error: 'No se pudo crear el usuario. Revisa el rol elegido.' }, 400)
     }
+    await audit('user.created', `${fullName} (${email})`)
     return json({ user: profile.data, temporaryPassword: password })
   }
 
   if (body.action === 'resetPassword') {
     const userId = String(body.userId ?? '')
+    // Restablecer la contraseña de alguien con más permisos permitiría tomar su cuenta.
+    const { target, error } = await manageable(userId)
+    if (error) return error
     const password = temporaryPassword()
     const updated = await admin.auth.admin.updateUserById(userId, { password })
     if (updated.error) {
@@ -78,7 +107,30 @@ Deno.serve(async (request) => {
       console.error(flagged.error)
       return json({ error: 'La contraseña cambió, pero no se pudo exigir su cambio. Inténtalo de nuevo.' }, 500)
     }
+    await audit('user.password_reset', `${target.full_name} (${target.email})`)
     return json({ temporaryPassword: password })
+  }
+
+  // Quita la aplicación autenticadora de quien la perdió: la configura de nuevo al ingresar.
+  if (body.action === 'resetMfa') {
+    const userId = String(body.userId ?? '')
+    const { target, error } = await manageable(userId)
+    if (error) return error
+    const factors = await admin.auth.admin.mfa.listFactors({ userId })
+    if (factors.error) {
+      console.error(factors.error)
+      return json({ error: 'No se pudo leer la verificación en dos pasos del usuario.' }, 400)
+    }
+    for (const factor of factors.data.factors) {
+      const removed = await admin.auth.admin.mfa.deleteFactor({ id: factor.id, userId })
+      if (removed.error) {
+        console.error(removed.error)
+        return json({ error: 'No se pudo restablecer la verificación en dos pasos.' }, 400)
+      }
+    }
+    // Sus sesiones abiertas caducan solas (ver la caducidad de sesión); al ingresar de nuevo, la configurará otra vez.
+    await audit('mfa.reset', `${target.full_name} (${target.email})`)
+    return json({ ok: true })
   }
 
   return json({ error: 'Acción desconocida.' }, 400)

@@ -104,7 +104,7 @@ export default function IntranetPage({ view }: { view: IntranetView }) {
   async function download(document: IntranetDocument) {
     setActionError('')
     try {
-      saveFile(await backend.documents.getFile(document), document.fileName)
+      saveFile(await backend.documents.getFile(document, 'download'), document.fileName)
     } catch (error) {
       setActionError(errorMessage(error))
     }

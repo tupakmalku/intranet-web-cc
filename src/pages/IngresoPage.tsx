@@ -12,7 +12,7 @@ import { isEmail } from '../lib/validation.ts'
 
 /** Pantalla de ingreso: la identidad de la institución a un lado y el formulario al otro. */
 export default function IngresoPage() {
-  const { signIn } = useAuth()
+  const { signIn, notice } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -41,6 +41,13 @@ export default function IngresoPage() {
         <form className="form login-form" onSubmit={handleSubmit} noValidate>
           <h1>{brand.appName}</h1>
           <p>Ingresa con tu correo institucional.</p>
+          {/* La sesión anterior se cerró sola: por inactividad o por su duración máxima. */}
+          {notice && !failure && (
+            <p className="notice notice-info" role="status">
+              <Icon name="clock" size={18} />
+              {notice}
+            </p>
+          )}
           <Field
             id="login-email"
             label="Correo"

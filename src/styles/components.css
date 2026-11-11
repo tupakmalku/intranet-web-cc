@@ -828,6 +828,157 @@
   color: var(--on-primary);
 }
 
+/* Aviso de cierre de sesión. */
+.session-expiry {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  text-align: center;
+}
+
+.session-expiry > svg {
+  color: var(--amber-strong);
+}
+
+.session-expiry strong {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Verificación en dos pasos. */
+.mfa-steps {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding-left: 20px;
+}
+
+.mfa-setup-grid {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: 20px;
+}
+
+.mfa-setup-grid .mfa-steps {
+  margin-bottom: 12px;
+}
+
+@media (max-width: 560px) {
+  .mfa-setup-grid {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+  }
+}
+
+.mfa-qr {
+  display: block;
+  padding: 6px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-field);
+  background: #fff; /* El QR necesita fondo blanco para leerse, aun con otra marca. */
+}
+
+.mfa-secret {
+  font-family: ui-monospace, monospace;
+  letter-spacing: 0.04em;
+  user-select: all;
+}
+
+.code-input {
+  font-size: 1.3rem !important;
+  letter-spacing: 0.3em;
+  font-variant-numeric: tabular-nums;
+}
+
+.mfa-status {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: var(--radius-field);
+  background: var(--background);
+}
+
+.mfa-status > svg {
+  color: var(--primary);
+}
+
+.mfa-status span {
+  display: grid;
+}
+
+.mfa-status small {
+  color: var(--ink-2);
+  font-size: 0.85rem;
+}
+
+/* Políticas y auditoría. */
+.settings-stack {
+  display: grid;
+  gap: 18px;
+  max-width: 760px;
+}
+
+.settings-card {
+  display: grid;
+  gap: 14px;
+}
+
+.settings-card h2 {
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.settings-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.settings-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 32px;
+  margin: 0;
+}
+
+.settings-facts dt {
+  color: var(--ink-2);
+  font-size: 0.85rem;
+}
+
+.settings-facts dd {
+  margin: 0;
+  font-weight: 500;
+}
+
+.audit-filters {
+  display: grid;
+  grid-template-columns: minmax(200px, 2fr) minmax(160px, 1fr) minmax(140px, 1fr) minmax(140px, 1fr) auto;
+  align-items: end;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.audit-table td {
+  vertical-align: top;
+}
+
+.audit-more {
+  margin-top: 12px;
+}
+
+@media (max-width: 1100px) {
+  .audit-filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.locked-action {
+  color: var(--ink-3);
+  cursor: help;
+}
+
 .table-actions {
   display: flex;
   justify-content: flex-end;

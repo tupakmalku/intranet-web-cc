@@ -2,12 +2,13 @@ import { useState } from 'react'
 import { backend } from '../backend/index.ts'
 import { birthdaySettings } from '../brand/index.ts'
 import BirthdayField from '../components/BirthdayField.tsx'
+import MfaStatus from '../components/MfaStatus.tsx'
 import PhotoField from '../components/PhotoField.tsx'
 import FormModal from '../components/ui/FormModal.tsx'
 import { useAuth, useSession } from '../context/auth.ts'
 import { useSubmit } from '../lib/useSubmit.ts'
 
-/** Mi perfil: cada usuario pone su foto y su cumpleaños. */
+/** Mi perfil: cada usuario pone su foto y su cumpleaños, y activa o desactiva la verificación en dos pasos. */
 export default function PerfilForm({ onDone, onClose }: { onDone: () => void; onClose: () => void }) {
   const { user } = useSession()
   const { refresh } = useAuth()
@@ -39,6 +40,7 @@ export default function PerfilForm({ onDone, onClose }: { onDone: () => void; on
     >
       <PhotoField user={user} value={photo} onChange={setPhoto} />
       {withBirthday && <BirthdayField id="my-birthday" value={birthday} onChange={setBirthday} />}
+      <MfaStatus />
     </FormModal>
   )
 }

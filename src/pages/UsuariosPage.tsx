@@ -6,10 +6,12 @@ import TemporaryPassword from '../components/TemporaryPassword.tsx'
 import Button from '../components/ui/Button.tsx'
 import ConfirmDialog from '../components/ui/ConfirmDialog.tsx'
 import Icon from '../components/ui/Icon.tsx'
+import LockedAction from '../components/ui/LockedAction.tsx'
 import StatusBadge from '../components/ui/StatusBadge.tsx'
 import { useSession } from '../context/auth.ts'
 import { useLayout } from '../context/layout.ts'
 import { useToast } from '../context/toasts.ts'
+import { canManageUser } from '../domain/permissions.ts'
 import type { User } from '../domain/types.ts'
 import UsuarioForm from '../forms/UsuarioForm.tsx'
 import { formatBirthday } from '../lib/birthdays.ts'
@@ -24,6 +26,7 @@ export default function UsuariosPage() {
   // Undefined: el formulario está cerrado. Null: se crea un usuario nuevo.
   const [editing, setEditing] = useState<User | null | undefined>(undefined)
   const [resetting, setResetting] = useState<User | null>(null)
+  const [resettingMfa, setResettingMfa] = useState<User | null>(null)
   const [secret, setSecret] = useState<{ userName: string; password: string } | null>(null)
   const query = useQuery(async () => {
     const [users, roles] = await Promise.all([backend.users.list(), backend.roles.list()])
@@ -76,24 +79,42 @@ export default function UsuariosPage() {
                 </td>
                 <td>
                   <div className="table-actions">
-                    <button
-                      type="button"
-                      className="icon-button"
-                      onClick={() => setResetting(user)}
-                      aria-label={`Restablecer la contraseña de ${user.fullName}`}
-                      title="Restablecer contraseña"
-                    >
-                      <Icon name="key" size={18} />
-                    </button>
-                    <button
-                      type="button"
-                      className="icon-button"
-                      onClick={() => setEditing(user)}
-                      aria-label={`Editar a ${user.fullName}`}
-                      title="Editar"
-                    >
-                      <Icon name="edit" size={18} />
-                    </button>
+                    {/* Nadie otorga lo que no tiene: a un usuario con más permisos no se le edita ni se le restablece la contraseña. */}
+                    {!canManageUser(user, roles, session) ? (
+                      <LockedAction label={`${user.fullName} tiene permisos que tú no tienes`} />
+                    ) : (
+                      <>
+                        <button
+                          type="button"
+                          className="icon-button"
+                          onClick={() => setResetting(user)}
+                          aria-label={`Restablecer la contraseña de ${user.fullName}`}
+                          title="Restablecer contraseña"
+                        >
+                          <Icon name="key" size={18} />
+                        </button>
+                        {user.id !== session.user.id && (
+                          <button
+                            type="button"
+                            className="icon-button"
+                            onClick={() => setResettingMfa(user)}
+                            aria-label={`Restablecer la verificación en dos pasos de ${user.fullName}`}
+                            title="Restablecer verificación en dos pasos"
+                          >
+                            <Icon name="shield" size={18} />
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          className="icon-button"
+                          onClick={() => setEditing(user)}
+                          aria-label={`Editar a ${user.fullName}`}
+                          title="Editar"
+                        >
+                          <Icon name="edit" size={18} />
+                        </button>
+                      </>
+                    )}
                   </div>
                 </td>
               </tr>
@@ -116,6 +137,21 @@ export default function UsuariosPage() {
             refreshBirthdays()
           }}
         />
+      )}
+
+      {resettingMfa && (
+        <ConfirmDialog
+          title="Restablecer verificación en dos pasos"
+          confirmLabel="Restablecer"
+          onClose={() => setResettingMfa(null)}
+          onConfirm={async () => {
+            await backend.users.resetMfa(resettingMfa.id)
+            toast('Verificación en dos pasos restablecida')
+          }}
+        >
+          Úsalo si {resettingMfa.fullName} perdió su teléfono. Si tenía una aplicación autenticadora configurada, se quitará y deberá configurarla de nuevo al
+          ingresar (si la política se lo exige). Confirma antes su identidad por otro medio.
+        </ConfirmDialog>
       )}
 
       {resetting && (

@@ -10,6 +10,7 @@ export type Permission =
   | 'documents.publish' // Subir documentos a la intranet y enviarlos a aprobación.
   | 'documents.approve' // Aprobar u observar la publicación de documentos.
   | 'intranet.configure' // Mantener el mapa de procesos y los tipos de documento de la intranet.
+  | 'audit.view' // Consultar el registro de auditoría.
 
 export interface Role {
   id: string
@@ -40,7 +41,72 @@ export interface User {
 export interface Session {
   user: User
   role: Role
+  /** Cuándo ingresó (ISO). Sirve para cerrar la sesión al cumplir su duración máxima. */
+  startedAt: string
+  /** Verificación en dos pasos del usuario en esta sesión. */
+  mfa: MfaState
 }
+
+/**
+ * Política de verificación en dos pasos de la institución:
+ * - off: opcional para todos.
+ * - privileged: obligatoria para quien gestiona usuarios o roles.
+ * - all: obligatoria para todos.
+ */
+export type MfaPolicy = 'off' | 'privileged' | 'all'
+
+export interface MfaState {
+  /** Tiene una aplicación autenticadora configurada. */
+  enrolled: boolean
+  /** La política se la exige. */
+  required: boolean
+  /** Ya ingresó el código en esta sesión. */
+  verified: boolean
+}
+
+/** Configuración de seguridad que se guarda en el servidor (la hace cumplir la base de datos). */
+export interface SecuritySettings {
+  mfaPolicy: MfaPolicy
+}
+
+/** Una entrada del registro de auditoría. No se modifica ni se elimina. */
+export interface AuditEntry {
+  id: string
+  /** Cuándo (ISO). */
+  at: string
+  /** Quién lo hizo; null si fue el sistema. */
+  actorId: string | null
+  actorName: string
+  action: AuditAction
+  /** Sobre qué: el nombre visible del documento, usuario, rol… */
+  targetName: string
+  /** Datos adicionales, en texto legible. */
+  detail: string
+}
+
+/** Lo que se registra. Los textos en español están en src/domain/audit.ts. */
+export type AuditAction =
+  | 'session.login'
+  | 'session.logout'
+  | 'session.expired'
+  | 'password.changed'
+  | 'mfa.enabled'
+  | 'mfa.disabled'
+  | 'mfa.reset'
+  | 'user.created'
+  | 'user.updated'
+  | 'user.password_reset'
+  | 'role.saved'
+  | 'role.deleted'
+  | 'document.submitted'
+  | 'document.approved'
+  | 'document.rejected'
+  | 'document.archived'
+  | 'document.deleted'
+  | 'document.viewed'
+  | 'document.downloaded'
+  | 'catalog.changed'
+  | 'settings.changed'
 
 // ---------- Intranet: documentos institucionales ----------
 

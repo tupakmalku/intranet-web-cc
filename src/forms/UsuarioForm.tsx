@@ -7,6 +7,8 @@ import Checkbox from '../components/ui/Checkbox.tsx'
 import Field from '../components/ui/Field.tsx'
 import FormModal from '../components/ui/FormModal.tsx'
 import Select from '../components/ui/Select.tsx'
+import { useSession } from '../context/auth.ts'
+import { canGrantRole } from '../domain/permissions.ts'
 import type { Role, User } from '../domain/types.ts'
 import { useSubmit } from '../lib/useSubmit.ts'
 import { isEmail } from '../lib/validation.ts'
@@ -32,6 +34,7 @@ export default function UsuarioForm({ user, roles, isSelf, onSaved, onClose }: P
   const [photo, setPhoto] = useState<Blob | null | undefined>(undefined)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const { saving, failure, submit } = useSubmit()
+  const session = useSession()
 
   async function handleSubmit() {
     const found: Record<string, string> = {}
@@ -93,7 +96,8 @@ export default function UsuarioForm({ user, roles, isSelf, onSaved, onClose }: P
         label="Rol"
         icon="shield"
         emptyLabel="Elige un rol"
-        options={roles.map((r) => ({ value: r.id, text: r.name }))}
+        // Nadie otorga lo que no tiene: solo los roles que no dan permisos que quien edita no tenga.
+        options={roles.filter((r) => r.id === user?.roleId || canGrantRole(r, session)).map((r) => ({ value: r.id, text: r.name }))}
         value={roleId}
         onChange={(e) => setRoleId(e.target.value)}
         error={errors.roleId}

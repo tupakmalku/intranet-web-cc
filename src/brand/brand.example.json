@@ -49,6 +49,12 @@
     "fieldRadius": 8
   },
 
+  "session": {
+    "idleMinutes": 15,
+    "maxHours": 10,
+    "warningSeconds": 60
+  },
+
   "birthdays": {
     "enabled": true,
     "celebration": true,

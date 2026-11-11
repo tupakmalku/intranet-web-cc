@@ -109,6 +109,22 @@ export interface Brand {
 
   /** Cumpleaños. Por defecto, todo activo con 3 días de anticipación. */
   birthdays?: BirthdaySettings
+
+  /** Caducidad de la sesión. Por defecto: 15 minutos de inactividad y 10 horas como máximo. */
+  session?: SessionSettings
+}
+
+/**
+ * Cuánto dura una sesión. Se aplica en el navegador; para que también lo haga
+ * cumplir el servidor, configurar lo mismo en Supabase (ver README, Seguridad).
+ */
+export interface SessionSettings {
+  /** Minutos sin actividad (1 a 480) tras los que se cierra la sesión. */
+  idleMinutes?: number
+  /** Horas desde el ingreso (1 a 24) tras las que se cierra aunque haya actividad. */
+  maxHours?: number
+  /** Segundos de aviso antes del cierre (10 a 300), con la opción de seguir conectado. */
+  warningSeconds?: number
 }
 
 /** Qué partes de los cumpleaños usa la institución. Las fotos de perfil no dependen de esto. */

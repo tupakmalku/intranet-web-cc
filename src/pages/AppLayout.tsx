@@ -47,7 +47,7 @@ const SECTIONS: Section[] = [
   { path: VIEW_PATHS.aprobar, title: 'Por aprobar', menu: 'Por aprobar', icon: 'tasks', permission: 'documents.approve', count: 'toReview', intranet: true },
   { path: VIEW_PATHS.config, title: 'Configuración', menu: 'Configuración', icon: 'layers', permission: 'intranet.configure', intranet: true },
   // Usuarios y Roles son pestañas dentro de Seguridad (src/pages/SeguridadPage.tsx).
-  { path: '/seguridad', title: 'Seguridad', menu: 'Seguridad', icon: 'shield', permission: ['users.manage', 'roles.manage'] },
+  { path: '/seguridad', title: 'Seguridad', menu: 'Seguridad', icon: 'shield', permission: ['users.manage', 'roles.manage', 'audit.view'] },
 ]
 
 /** Días hacia adelante que cubren la tarjeta y la lista de cumpleaños. */

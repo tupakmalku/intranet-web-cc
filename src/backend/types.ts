@@ -1,4 +1,5 @@
-import type { DocumentType, IntranetDocument, ProcessNode, Role, Session, User } from '../domain/types.ts'
+import type { AuditGroup } from '../domain/audit.ts'
+import type { AuditEntry, DocumentType, IntranetDocument, ProcessNode, Role, SecuritySettings, Session, User } from '../domain/types.ts'
 
 /*
  * Contrato del backend. La aplicación solo conoce esta interfaz: para migrar a
@@ -21,15 +22,45 @@ export type DocumentTypeInput = Pick<DocumentType, 'name'> & { id?: string }
 export type NewUser = Pick<User, 'email' | 'fullName' | 'roleId' | 'birthday'>
 export type UserPatch = Pick<User, 'fullName' | 'roleId' | 'active' | 'birthday'>
 
+/** Lo necesario para configurar la aplicación autenticadora. */
+export interface MfaEnrollment {
+  /** Identificador de la configuración pendiente, para confirmarla. */
+  factorId: string
+  /** Imagen del código QR (dirección para un <img>). */
+  qrCode: string
+  /** La clave, para escribirla a mano si no se puede escanear. */
+  secret: string
+}
+
+export interface AuditFilter {
+  /** Desde y hasta (AAAA-MM-DD, inclusive). */
+  from?: string
+  to?: string
+  group?: AuditGroup
+  /** Texto a buscar en el usuario, la acción o el objeto. */
+  query?: string
+  /** Máximo de entradas, de la más reciente a la más antigua. */
+  limit: number
+}
+
 export interface AuthApi {
   /** La sesión abierta, o null si no hay ninguna. */
   getSession(): Promise<Session | null>
   signIn(email: string, password: string): Promise<Session>
-  signOut(): Promise<void>
+  /** Cierra la sesión. `expired`: la cerró la caducidad, no el usuario (queda así en la auditoría). */
+  signOut(reason?: 'expired'): Promise<void>
   /** Cambia la contraseña del usuario en sesión y da por cumplido el cambio obligatorio. */
   changePassword(current: string, next: string): Promise<void>
   /** Registra o corrige el cumpleaños del usuario en sesión (MM-DD, o null para quitarlo). */
   setMyBirthday(birthday: string | null): Promise<void>
+  /** Empieza a configurar la aplicación autenticadora: devuelve el QR y la clave. */
+  startMfaEnrollment(): Promise<MfaEnrollment>
+  /** Confirma la configuración con un código de la aplicación; la sesión queda verificada. */
+  confirmMfaEnrollment(factorId: string, code: string): Promise<void>
+  /** Verifica la sesión con un código de la aplicación ya configurada. */
+  verifyMfa(code: string): Promise<void>
+  /** Quita la aplicación autenticadora propia. No se puede si la política la exige. */
+  disableMfa(): Promise<void>
 }
 
 export interface UsersApi {
@@ -47,6 +78,19 @@ export interface UsersApi {
   setPhoto(id: string, photo: Blob | null): Promise<User>
   /** Dirección para mostrar la foto en un <img>, o null si no tiene. */
   photoUrl(user: Pick<User, 'id' | 'photo'>): Promise<string | null>
+  /** Quita la aplicación autenticadora de un usuario que la perdió; la configura de nuevo en su próximo ingreso. */
+  resetMfa(id: string): Promise<void>
+}
+
+/** Configuración de seguridad guardada en el servidor. La cambia quien gestiona roles. */
+export interface SecurityApi {
+  getSettings(): Promise<SecuritySettings>
+  saveSettings(settings: SecuritySettings): Promise<SecuritySettings>
+}
+
+/** Registro de auditoría: solo se agrega y se consulta (con el permiso audit.view). */
+export interface AuditApi {
+  list(filter: AuditFilter): Promise<AuditEntry[]>
 }
 
 export interface RolesApi {
@@ -88,8 +132,8 @@ export interface DocumentsApi {
   /** Retira de la intranet un documento publicado. */
   archive(id: string): Promise<IntranetDocument>
   remove(document: IntranetDocument): Promise<void>
-  /** El archivo, para el visor o para descargarlo, si el usuario tiene acceso. */
-  getFile(document: IntranetDocument): Promise<Blob>
+  /** El archivo, para el visor o para descargarlo, si el usuario tiene acceso. Queda en la auditoría. */
+  getFile(document: IntranetDocument, purpose: 'view' | 'download'): Promise<Blob>
 }
 
 export interface Backend {
@@ -103,4 +147,6 @@ export interface Backend {
   documents: DocumentsApi
   processes: ProcessesApi
   documentTypes: DocumentTypesApi
+  security: SecurityApi
+  audit: AuditApi
 }

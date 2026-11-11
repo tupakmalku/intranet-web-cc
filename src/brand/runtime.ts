@@ -12,12 +12,13 @@ import type { Brand, BrandColors, ProcessTone } from './types.ts'
  */
 
 /** Lo que puede traer brand.json: cualquier parte de la marca. */
-export type BrandOverride = Partial<Omit<Brand, 'colors' | 'logo' | 'typography' | 'shape' | 'birthdays'>> & {
+export type BrandOverride = Partial<Omit<Brand, 'colors' | 'logo' | 'typography' | 'shape' | 'birthdays' | 'session'>> & {
   colors?: Partial<BrandColors>
   logo?: Brand['logo']
   typography?: Brand['typography']
   shape?: Brand['shape']
   birthdays?: Brand['birthdays']
+  session?: Brand['session']
 }
 
 const TEXT_KEYS = ['appName', 'institution', 'shortName', 'slogan', 'motto'] as const
@@ -128,7 +129,16 @@ export function sanitizeBrandOverride(raw: unknown): BrandOverride {
     })
   }
 
-  const known = new Set<string>([...TEXT_KEYS, 'colors', 'logo', 'typography', 'shape', 'processTones', 'birthdays', '$schema', '_comment'])
+  if (isRecord(raw.session)) {
+    const between = (min: number, max: number) => (v: unknown): v is number => Number.isInteger(v) && (v as number) >= min && (v as number) <= max
+    override.session = compact({
+      idleMinutes: pick(raw.session, 'idleMinutes', between(1, 480), 'debe ser un número entero de 1 a 480'),
+      maxHours: pick(raw.session, 'maxHours', between(1, 24), 'debe ser un número entero de 1 a 24'),
+      warningSeconds: pick(raw.session, 'warningSeconds', between(10, 300), 'debe ser un número entero de 10 a 300'),
+    })
+  }
+
+  const known = new Set<string>([...TEXT_KEYS, 'colors', 'logo', 'typography', 'shape', 'processTones', 'birthdays', 'session', '$schema', '_comment'])
   for (const key of Object.keys(raw)) if (!known.has(key)) warn(`clave desconocida "${key}".`)
   return override
 }

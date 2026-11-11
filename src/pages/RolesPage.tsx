@@ -3,9 +3,11 @@ import { backend } from '../backend/index.ts'
 import Button from '../components/ui/Button.tsx'
 import ConfirmDialog from '../components/ui/ConfirmDialog.tsx'
 import Icon from '../components/ui/Icon.tsx'
+import LockedAction from '../components/ui/LockedAction.tsx'
 import { useSession } from '../context/auth.ts'
 import { useToast } from '../context/toasts.ts'
 import { PERMISSIONS } from '../domain/labels.ts'
+import { canGrantRole } from '../domain/permissions.ts'
 import type { Role } from '../domain/types.ts'
 import RolForm from '../forms/RolForm.tsx'
 import { useQuery } from '../lib/useQuery.ts'
@@ -63,10 +65,15 @@ export default function RolesPage() {
                 <td className="num">{users.filter((u) => u.roleId === role.id).length}</td>
                 <td>
                   <div className="table-actions">
-                    <button type="button" className="icon-button" onClick={() => setEditing(role)} aria-label={`Editar el rol ${role.name}`} title="Editar">
-                      <Icon name="edit" size={18} />
-                    </button>
-                    {!role.system && (
+                    {/* Nadie otorga lo que no tiene: un rol con permisos que no tiene quien mira, no lo edita ni lo elimina. */}
+                    {!canGrantRole(role, session) ? (
+                      <LockedAction label={`El rol ${role.name} tiene permisos que tú no tienes`} />
+                    ) : (
+                      <button type="button" className="icon-button" onClick={() => setEditing(role)} aria-label={`Editar el rol ${role.name}`} title="Editar">
+                        <Icon name="edit" size={18} />
+                      </button>
+                    )}
+                    {!role.system && canGrantRole(role, session) && (
                       <button
                         type="button"
                         className="icon-button danger"

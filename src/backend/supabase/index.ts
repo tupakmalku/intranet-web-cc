@@ -1,5 +1,6 @@
 import { createClient, FunctionsHttpError, type SupabaseClient } from '@supabase/supabase-js'
-import type { DocumentType, IntranetDocument, ProcessNode, Role, Session, User } from '../../domain/types.ts'
+import { AUDIT_ACTIONS, mfaRequired } from '../../domain/audit.ts'
+import type { AuditAction, AuditEntry, DocumentType, IntranetDocument, MfaPolicy, ProcessNode, Role, Session, User } from '../../domain/types.ts'
 import { DOCUMENT_FILES, safeFileName } from '../../lib/files.ts'
 import { BackendError, type Backend } from '../types.ts'
 import { newId } from '../../lib/ids.ts'
@@ -39,6 +40,22 @@ const toUser = (row: any): User => ({
 })
 
 const AVATARS_BUCKET = 'avatars'
+
+const toAuditEntry = (row: any): AuditEntry => ({
+  id: String(row.id),
+  at: row.at,
+  actorId: row.actor_id,
+  actorName: row.actor_name,
+  action: row.action as AuditAction,
+  targetName: row.target_name,
+  detail: row.detail,
+})
+
+/** Quita lo que rompería el filtro de búsqueda de PostgREST (comas, paréntesis, comodines). */
+const searchText = (text: string) => text.replace(/[,()%*\\]/g, ' ').trim()
+
+/** La imagen del QR como dirección para un <img> (Supabase la da como SVG). */
+const qrSource = (qr: string) => (qr.startsWith('data:') ? qr : `data:image/svg+xml;utf8,${encodeURIComponent(qr)}`)
 
 /** Direcciones firmadas de las fotos (valen una hora), para no pedir una cada vez que se muestran. */
 const photoUrls = new Map<string, { url: string; expires: number }>()
@@ -105,14 +122,49 @@ export function createSupabaseBackend(): Backend {
   const supabase: SupabaseClient = createClient(url, key)
 
   /** Lee el perfil y el rol del usuario autenticado. Cierra la sesión si está inhabilitado. */
-  async function loadSession(userId: string): Promise<Session> {
+  async function loadSession(authUser: { id: string; last_sign_in_at?: string }): Promise<Session> {
+    const userId = authUser.id
     const { data, error } = await supabase.from('profiles').select('*, role:roles(*)').eq('id', userId).maybeSingle()
     if (error) throw toBackendError(error, 'No se pudo leer tu usuario.')
     if (!data || !data.active) {
       await supabase.auth.signOut()
       throw new BackendError('Tu usuario está inhabilitado. Comunícate con el oficial de seguridad.')
     }
-    return { user: toUser(data), role: toRole(data.role) }
+    const role = toRole(data.role)
+    // Verificación en dos pasos: si tiene aplicación configurada, si la política se la exige y si ya ingresó el código.
+    const [level, factors, settings] = await Promise.all([
+      supabase.auth.mfa.getAuthenticatorAssuranceLevel(),
+      supabase.auth.mfa.listFactors(),
+      supabase.from('app_settings').select('mfa_policy').maybeSingle(),
+    ])
+    const mfa = {
+      enrolled: (factors.data?.totp.length ?? 0) > 0,
+      required: mfaRequired((settings.data?.mfa_policy ?? 'privileged') as MfaPolicy, role),
+      verified: level.data?.currentLevel === 'aal2',
+    }
+    // La hora del último ingreso con contraseña: la duración máxima de la sesión se cuenta desde ahí.
+    return { user: toUser(data), role, startedAt: authUser.last_sign_in_at ?? new Date().toISOString(), mfa }
+  }
+
+  /** Deja constancia en la auditoría de lo que solo sabe la aplicación (ingresos, lecturas). No interrumpe si falla. */
+  async function logEvent(action: AuditAction, documentId?: string) {
+    const { error } = await supabase.rpc('log_event', { action, document_id: documentId ?? null })
+    if (error) console.error(error)
+  }
+
+  /** La aplicación autenticadora ya configurada del usuario en sesión. */
+  async function verifiedFactor() {
+    const { data, error } = await supabase.auth.mfa.listFactors()
+    if (error) throw toBackendError(error, 'No se pudo leer tu verificación en dos pasos.')
+    return data.totp[0] ?? null
+  }
+
+  async function challenge(factorId: string, code: string) {
+    const { error } = await supabase.auth.mfa.challengeAndVerify({ factorId, code: code.replace(/\s/g, '') })
+    if (error) {
+      console.error(error)
+      throw new BackendError('El código no es correcto o ya venció. Escribe el que muestra ahora tu aplicación.')
+    }
   }
 
   /** Llama a la función que gestiona usuarios con la clave de servicio. */
@@ -133,16 +185,18 @@ export function createSupabaseBackend(): Backend {
     auth: {
       async getSession() {
         const { data } = await supabase.auth.getSession()
-        return data.session ? loadSession(data.session.user.id) : null
+        return data.session ? loadSession(data.session.user) : null
       },
 
       async signIn(email, password) {
         const { data, error } = await supabase.auth.signInWithPassword({ email, password })
         if (error || !data.user) throw new BackendError('El correo o la contraseña no son correctos.')
-        return loadSession(data.user.id)
+        await logEvent('session.login')
+        return loadSession(data.user)
       },
 
-      async signOut() {
+      async signOut(reason) {
+        await logEvent(reason === 'expired' ? 'session.expired' : 'session.logout')
         await supabase.auth.signOut()
       },
 
@@ -158,10 +212,45 @@ export function createSupabaseBackend(): Backend {
           throw new BackendError('No se pudo cambiar la contraseña. Prueba con otra distinta.')
         }
         unwrap(await supabase.rpc('complete_password_change'), 'La contraseña cambió, pero no se pudo registrar. Vuelve a ingresar.')
+        await logEvent('password.changed')
       },
 
       async setMyBirthday(birthday) {
         unwrap(await supabase.rpc('set_my_birthday', { value: birthday ?? '' }), 'No se pudo guardar tu cumpleaños.')
+      },
+
+      async startMfaEnrollment() {
+        // Una configuración empezada y no confirmada se descarta: si no, la nueva no se podría crear.
+        const listed = await supabase.auth.mfa.listFactors()
+        for (const factor of listed.data?.all ?? []) {
+          if (factor.status === 'unverified') await supabase.auth.mfa.unenroll({ factorId: factor.id })
+        }
+        const { data, error } = await supabase.auth.mfa.enroll({ factorType: 'totp', friendlyName: `Intranet ${new Date().toISOString()}` })
+        if (error || !data) throw toBackendError(error ?? { message: '' }, 'No se pudo empezar la configuración.')
+        return { factorId: data.id, qrCode: qrSource(data.totp.qr_code), secret: data.totp.secret }
+      },
+
+      async confirmMfaEnrollment(factorId, code) {
+        await challenge(factorId, code)
+        await logEvent('mfa.enabled')
+      },
+
+      async verifyMfa(code) {
+        const factor = await verifiedFactor()
+        if (!factor) throw new BackendError('No tienes una aplicación autenticadora configurada.')
+        await challenge(factor.id, code)
+      },
+
+      async disableMfa() {
+        const session = await supabase.auth.getSession()
+        if (!session.data.session) throw new BackendError('Tu sesión terminó. Vuelve a ingresar.')
+        const loaded = await loadSession(session.data.session.user)
+        if (loaded.mfa.required) throw new BackendError('La política de la institución exige la verificación en dos pasos para tu rol.')
+        const factor = await verifiedFactor()
+        if (!factor) return
+        await logEvent('mfa.disabled')
+        const { error } = await supabase.auth.mfa.unenroll({ factorId: factor.id })
+        if (error) throw toBackendError(error, 'No se pudo desactivar la verificación en dos pasos.')
       },
     },
 
@@ -217,6 +306,10 @@ export function createSupabaseBackend(): Backend {
         }
         if (current.photo_path) await supabase.storage.from(AVATARS_BUCKET).remove([current.photo_path])
         return toUser(unwrap(await supabase.from('profiles').select('*').eq('id', id).single(), 'No se pudo leer el usuario.'))
+      },
+
+      async resetMfa(id) {
+        await adminUsers({ action: 'resetMfa', userId: id })
       },
 
       async photoUrl(user) {
@@ -322,13 +415,49 @@ export function createSupabaseBackend(): Backend {
         await supabase.storage.from(DOCUMENTS_BUCKET).remove([document.path])
       },
 
-      async getFile(document) {
+      async getFile(document, purpose) {
         const { data, error } = await supabase.storage.from(DOCUMENTS_BUCKET).download(document.path)
         if (error || !data) {
           console.error(error)
           throw new BackendError('No se pudo abrir el archivo, o ya no tienes acceso a él.')
         }
+        await logEvent(purpose === 'view' ? 'document.viewed' : 'document.downloaded', document.id)
         return new Blob([data], { type: document.mimeType })
+      },
+    },
+
+    security: {
+      async getSettings() {
+        const row = unwrap(await supabase.from('app_settings').select('mfa_policy').single(), 'No se pudo leer la configuración de seguridad.')
+        return { mfaPolicy: row.mfa_policy as MfaPolicy }
+      },
+
+      async saveSettings(settings) {
+        const row = unwrap(
+          await supabase.from('app_settings').update({ mfa_policy: settings.mfaPolicy }).eq('id', true).select('mfa_policy').single(),
+          'No se pudo guardar la configuración de seguridad.',
+        )
+        return { mfaPolicy: row.mfa_policy as MfaPolicy }
+      },
+    },
+
+    audit: {
+      async list(filter) {
+        let query = supabase.from('audit_log').select('*').order('at', { ascending: false }).limit(filter.limit)
+        // Las fechas del filtro son del día local: se convierten al instante UTC correspondiente.
+        if (filter.from) query = query.gte('at', new Date(`${filter.from}T00:00:00`).toISOString())
+        if (filter.to) query = query.lte('at', new Date(`${filter.to}T23:59:59.999`).toISOString())
+        if (filter.group) {
+          query = query.in(
+            'action',
+            Object.entries(AUDIT_ACTIONS)
+              .filter(([, a]) => a.group === filter.group)
+              .map(([action]) => action),
+          )
+        }
+        const text = filter.query ? searchText(filter.query) : ''
+        if (text) query = query.or(`actor_name.ilike.*${text}*,target_name.ilike.*${text}*,detail.ilike.*${text}*`)
+        return unwrap(await query, 'No se pudo leer la auditoría.').map(toAuditEntry)
       },
     },
 

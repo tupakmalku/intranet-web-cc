@@ -25,7 +25,7 @@ export default function PrimerIngresoPage() {
             toast('Contraseña cambiada')
           }}
           secondaryAction={
-            <Button variant="text" onClick={signOut}>
+            <Button variant="text" onClick={() => signOut()}>
               Salir
             </Button>
           }

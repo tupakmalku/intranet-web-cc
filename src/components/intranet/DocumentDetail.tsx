@@ -54,7 +54,7 @@ export default function DocumentDetail({ document, catalog, onChanged, onClose }
   async function download() {
     setDownloadError('')
     try {
-      saveFile(await backend.documents.getFile(document), document.fileName)
+      saveFile(await backend.documents.getFile(document, 'download'), document.fileName)
     } catch (error) {
       setDownloadError(errorMessage(error))
     }

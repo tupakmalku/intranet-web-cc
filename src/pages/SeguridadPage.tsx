@@ -14,6 +14,8 @@ export default function SeguridadPage() {
   const tabs = [
     ...(can('users.manage') ? [{ path: 'usuarios', label: 'Usuarios' }] : []),
     ...(can('roles.manage') ? [{ path: 'roles', label: 'Roles' }] : []),
+    ...(can('roles.manage') ? [{ path: 'politicas', label: 'Políticas' }] : []),
+    ...(can('audit.view') ? [{ path: 'auditoria', label: 'Auditoría' }] : []),
   ]
 
   return (
