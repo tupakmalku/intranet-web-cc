@@ -107,11 +107,11 @@ Word se acepta solo en .docx: el formato .doc antiguo no se puede mostrar en el 
 
 ### Nuestra institución
 
-- Sección del menú con la **misión, visión, valores y política de calidad**, con el estilo de la pieza gráfica de la institución (título, línea e ícono en recuadro).
-- La edita quien tiene *Configurar la intranet* (botón **Editar** en la sección), sin tocar el código. Queda en la auditoría.
+- La **misión, visión, valores y política de calidad** se muestran en la **pantalla de ingreso**, con el estilo de la pieza gráfica de la institución (título, línea e ícono en recuadro).
+- Se editan en **Configuración > Nuestra institución** (botón **Editar**), con el permiso *Configurar la intranet*, sin tocar el código. Queda en la auditoría.
 - La política de calidad puede enlazar su **documento oficial** de la intranet (por código): siempre se abre la versión publicada vigente.
 - En la **pantalla de ingreso**, bajo el eslogan, se muestra por defecto **todo** (misión, visión, valores y política de calidad) en bloques compactos; al editar se puede elegir solo la misión, solo los valores o nada. Es información pública: se lee sin sesión. En móvil se muestra solo el logotipo y el eslogan.
-- Si no tiene contenido, la sección no aparece en el menú (salvo para quien puede escribirlo).
+- Si no tiene contenido, la pantalla de ingreso muestra solo el lema.
 - En Supabase: tabla `institution_profile` (`supabase/migrations/20261201000500_institution.sql`). Empieza vacía; se llena desde la intranet.
 
 ### Fotos y cumpleaños

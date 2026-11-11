@@ -6,6 +6,7 @@ import type { DocumentType, IntranetDocument, ProcessNode } from '../../domain/t
 import ProcesoForm from '../../forms/ProcesoForm.tsx'
 import TipoDocumentoForm from '../../forms/TipoDocumentoForm.tsx'
 import { errorMessage } from '../../lib/errors.ts'
+import InstitutionSettings from '../institution/InstitutionSettings.tsx'
 import Button from '../ui/Button.tsx'
 import Card from '../ui/Card.tsx'
 import ConfirmDialog from '../ui/ConfirmDialog.tsx'
@@ -23,9 +24,10 @@ interface Props {
 type ProcessForm = { process?: ProcessNode; parent: ProcessNode | null }
 
 /**
- * Configuración de la intranet: el mapa de procesos (macroprocesos, procesos y
- * subprocesos, con su orden) y los tipos de documento, que son las carpetas de
- * cada proceso. Si la institución cambia su mapa, se actualiza aquí.
+ * Configuración de la intranet: la identidad de la institución (misión, visión,
+ * valores y política de calidad del ingreso), el mapa de procesos
+ * (macroprocesos, procesos y subprocesos, con su orden) y los tipos de
+ * documento, que son las carpetas de cada proceso.
  */
 export default function IntranetSettings({ catalog, documents, onChanged }: Props) {
   const toast = useToast()
@@ -100,6 +102,8 @@ export default function IntranetSettings({ catalog, documents, onChanged }: Prop
           {moveError}
         </p>
       )}
+
+      <InstitutionSettings documents={documents} />
 
       <Card
         title="Mapa de procesos"

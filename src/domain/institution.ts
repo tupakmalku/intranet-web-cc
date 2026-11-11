@@ -1,5 +1,13 @@
 import type { InstitutionProfile } from './types.ts'
 
+/** Qué se muestra de la identidad en la pantalla de ingreso. */
+export const LOGIN_HIGHLIGHTS: Record<InstitutionProfile['loginHighlight'], string> = {
+  all: 'Todo',
+  mission: 'La misión',
+  values: 'Los valores',
+  none: 'Nada',
+}
+
 /* Identidad institucional: valores vacíos y reglas compartidas. */
 
 export const EMPTY_INSTITUTION: InstitutionProfile = {
@@ -11,7 +19,7 @@ export const EMPTY_INSTITUTION: InstitutionProfile = {
   loginHighlight: 'all',
 }
 
-/** ¿Tiene algo que mostrar? Si no, la sección no aparece en el menú (salvo para quien la edita). */
+/** ¿Tiene algo que mostrar? Si no, la pantalla de ingreso no muestra el resumen. */
 export const hasInstitutionContent = (p: InstitutionProfile) => !!(p.mission || p.vision || p.values.length || p.qualityPolicy)
 
 /** Limpia lo que llega del formulario: sin espacios sobrantes ni valores vacíos o repetidos. */

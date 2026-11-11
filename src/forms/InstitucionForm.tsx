@@ -4,6 +4,7 @@ import FormModal from '../components/ui/FormModal.tsx'
 import SegmentedControl from '../components/ui/SegmentedControl.tsx'
 import Select from '../components/ui/Select.tsx'
 import TextArea from '../components/ui/TextArea.tsx'
+import { LOGIN_HIGHLIGHTS } from '../domain/institution.ts'
 import type { InstitutionProfile, IntranetDocument } from '../domain/types.ts'
 import { useSubmit } from '../lib/useSubmit.ts'
 
@@ -15,12 +16,7 @@ interface Props {
   onClose: () => void
 }
 
-const HIGHLIGHTS = [
-  { value: 'all', text: 'Todo' },
-  { value: 'mission', text: 'La misión' },
-  { value: 'values', text: 'Los valores' },
-  { value: 'none', text: 'Nada' },
-]
+const HIGHLIGHTS = Object.entries(LOGIN_HIGHLIGHTS).map(([value, text]) => ({ value, text }))
 
 /** Edita la misión, la visión, los valores y la política de calidad. */
 export default function InstitucionForm({ profile, documents, onSaved, onClose }: Props) {
@@ -53,7 +49,7 @@ export default function InstitucionForm({ profile, documents, onSaved, onClose }
   return (
     <FormModal
       title="Identidad institucional"
-      description="Se muestra a todos en «Nuestra institución». Es información pública: también se ve en la pantalla de ingreso."
+      description="Se muestra en la pantalla de ingreso. Es información pública: se ve sin iniciar sesión."
       size="wide"
       submitLabel="Guardar"
       saving={saving}
