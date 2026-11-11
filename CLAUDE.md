@@ -60,6 +60,8 @@ La mayoría de los usuarios usa portátiles de 14" a 1920×1080, normalmente con
 
 **Nuestra institución.** `InstitutionProfile` (misión, visión, valores, política de calidad) se lee sin sesión con `backend.institution.get()` (pantalla de ingreso) y se edita con el permiso `intranet.configure`. Bloques reutilizables en `src/components/institution/` (`InstitutionBlock`, `ValueChips`); estilos en `src/styles/institution.css`.
 
+**Pantallas del ingreso.** Ingresar y crear la contraseña temporal usan el marco común `AuthShell` (panel de marca con la institución y el eslogan, y el formulario al lado); toda pantalla nueva previa a la aplicación debe usarlo. El tamaño del eslogan se ajusta con la variable CSS `--slogan-scale`.
+
 ## Convenciones
 
 - Identificadores en inglés; comentarios y todo texto visible para el usuario en **español**. Los componentes llevan nombre en inglés; las páginas y formularios, en español (`IntranetPage`, `UsuariosPage`, `DocumentoForm`, `RevisionForm`).

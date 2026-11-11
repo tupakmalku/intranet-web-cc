@@ -153,8 +153,11 @@
   padding: 40px 24px;
 }
 
+/* El contenido de cualquier pantalla del ingreso (AuthShell): título, introducción y formulario. */
 .login-form {
-  width: min(100%, 380px);
+  display: grid;
+  gap: 16px;
+  width: min(100%, 400px);
 }
 
 .login-title {
@@ -163,7 +166,7 @@
   line-height: 1.15;
 }
 
-.login-form > p {
+.login-intro {
   margin-top: -8px;
   color: var(--ink-2);
 }

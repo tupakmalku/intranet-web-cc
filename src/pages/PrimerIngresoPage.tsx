@@ -1,3 +1,4 @@
+import AuthShell from '../components/AuthShell.tsx'
 import Button from '../components/ui/Button.tsx'
 import { useAuth } from '../context/auth.ts'
 import { useToast } from '../context/toasts.ts'
@@ -12,25 +13,22 @@ export default function PrimerIngresoPage() {
   const toast = useToast()
 
   return (
-    <div className="centered-screen">
-      <main className="card gate">
-        <h1>Crea tu contraseña</h1>
-        <p>
-          {session?.user.fullName}, estás usando una contraseña temporal. Para continuar, cámbiala por una que solo tú conozcas.
-        </p>
-        <CambioClaveForm
-          currentLabel="Contraseña temporal"
-          onDone={async () => {
-            await refresh()
-            toast('Contraseña cambiada')
-          }}
-          secondaryAction={
-            <Button variant="text" onClick={() => signOut()}>
-              Salir
-            </Button>
-          }
-        />
-      </main>
-    </div>
+    <AuthShell
+      title="Crea tu contraseña"
+      intro={`${session?.user.fullName}, estás usando una contraseña temporal. Para continuar, cámbiala por una que solo tú conozcas.`}
+    >
+      <CambioClaveForm
+        currentLabel="Contraseña temporal"
+        onDone={async () => {
+          await refresh()
+          toast('Contraseña cambiada')
+        }}
+        secondaryAction={
+          <Button variant="text" onClick={() => signOut()}>
+            Salir
+          </Button>
+        }
+      />
+    </AuthShell>
   )
 }
