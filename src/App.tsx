@@ -7,6 +7,7 @@ import IngresoPage from './pages/IngresoPage.tsx'
 import IntranetPage from './pages/IntranetPage.tsx'
 import PrimerIngresoPage from './pages/PrimerIngresoPage.tsx'
 import RolesPage from './pages/RolesPage.tsx'
+import SeguridadPage from './pages/SeguridadPage.tsx'
 import UsuariosPage from './pages/UsuariosPage.tsx'
 import { VIEW_PATHS } from './pages/intranetViews.ts'
 
@@ -34,8 +35,16 @@ function Screens() {
         {can('documents.publish') && <Route path={VIEW_PATHS.mios.slice(1)} element={<IntranetPage view="mios" />} />}
         {can('documents.approve') && <Route path={VIEW_PATHS.aprobar.slice(1)} element={<IntranetPage view="aprobar" />} />}
         {can('intranet.configure') && <Route path={VIEW_PATHS.config.slice(1)} element={<IntranetPage view="config" />} />}
-        {can('users.manage') && <Route path="usuarios" element={<UsuariosPage />} />}
-        {can('roles.manage') && <Route path="roles" element={<RolesPage />} />}
+        {(can('users.manage') || can('roles.manage')) && (
+          <Route path="seguridad" element={<SeguridadPage />}>
+            <Route index element={<Navigate to={can('users.manage') ? 'usuarios' : 'roles'} replace />} />
+            {can('users.manage') && <Route path="usuarios" element={<UsuariosPage />} />}
+            {can('roles.manage') && <Route path="roles" element={<RolesPage />} />}
+          </Route>
+        )}
+        {/* Direcciones anteriores a la sección Seguridad. */}
+        <Route path="usuarios" element={<Navigate to="/seguridad/usuarios" replace />} />
+        <Route path="roles" element={<Navigate to="/seguridad/roles" replace />} />
         {/* Una dirección desconocida, o de una sección que el rol no permite, lleva a la intranet. */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>

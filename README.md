@@ -19,7 +19,7 @@ Para empezar de cero en el modo de demostración, borra los datos del sitio en e
 
 ## Roles y permisos
 
-Un rol es una combinación de permisos. Se crean y editan desde la sección **Roles**; estos vienen creados:
+Un rol es una combinación de permisos. Se crean y editan en **Seguridad > Roles** (los usuarios, en **Seguridad > Usuarios**); estos vienen creados:
 
 | Rol | Qué puede hacer |
 | --- | --- |

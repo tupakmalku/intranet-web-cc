@@ -39,8 +39,8 @@ const SECTIONS: Section[] = [
   { path: VIEW_PATHS.mios, title: 'Mis documentos', menu: 'Mis documentos', icon: 'file', permission: 'documents.publish', count: 'mine', intranet: true },
   { path: VIEW_PATHS.aprobar, title: 'Por aprobar', menu: 'Por aprobar', icon: 'tasks', permission: 'documents.approve', count: 'toReview', intranet: true },
   { path: VIEW_PATHS.config, title: 'Configuración', menu: 'Configuración', icon: 'layers', permission: 'intranet.configure', intranet: true },
-  { path: '/usuarios', title: 'Usuarios', menu: 'Usuarios', icon: 'people', permission: 'users.manage' },
-  { path: '/roles', title: 'Roles', menu: 'Roles', icon: 'shield', permission: 'roles.manage' },
+  // Usuarios y Roles son pestañas dentro de Seguridad (src/pages/SeguridadPage.tsx).
+  { path: '/seguridad', title: 'Seguridad', menu: 'Seguridad', icon: 'shield', permission: ['users.manage', 'roles.manage'] },
 ]
 
 const initials = (name: string) =>
@@ -79,7 +79,7 @@ export default function AppLayout() {
   }
 
   const sections = SECTIONS.filter((s) => !s.permission || [s.permission].flat().some((p) => can(p)))
-  // La sección activa es la de ruta más larga que coincide: "/usuarios/x" pertenece a "/usuarios".
+  // La sección activa es la de ruta más larga que coincide: "/seguridad/roles" pertenece a "/seguridad".
   const current = [...SECTIONS].reverse().find((s) => pathname === s.path || pathname.startsWith(`${s.path}/`)) ?? SECTIONS[0]
 
   /** Abre el formulario de publicar (?publicar=1). Dentro de la intranet conserva la vista y la carpeta abiertas, que el formulario usa como punto de partida. */
