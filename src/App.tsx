@@ -8,6 +8,7 @@ import IntranetPage from './pages/IntranetPage.tsx'
 import PrimerIngresoPage from './pages/PrimerIngresoPage.tsx'
 import RolesPage from './pages/RolesPage.tsx'
 import UsuariosPage from './pages/UsuariosPage.tsx'
+import { VIEW_PATHS } from './pages/intranetViews.ts'
 
 /** Lleva la dirección /intranet (la que tenía el módulo dentro de Compliance 365) al inicio, con su vista. */
 function LegacyIntranetRedirect() {
@@ -28,8 +29,11 @@ function Screens() {
   return (
     <Routes>
       <Route element={<AppLayout />}>
-        <Route index element={<IntranetPage />} />
+        <Route index element={<IntranetPage view="mapa" />} />
         <Route path="intranet" element={<LegacyIntranetRedirect />} />
+        {can('documents.publish') && <Route path={VIEW_PATHS.mios.slice(1)} element={<IntranetPage view="mios" />} />}
+        {can('documents.approve') && <Route path={VIEW_PATHS.aprobar.slice(1)} element={<IntranetPage view="aprobar" />} />}
+        {can('intranet.configure') && <Route path={VIEW_PATHS.config.slice(1)} element={<IntranetPage view="config" />} />}
         {can('users.manage') && <Route path="usuarios" element={<UsuariosPage />} />}
         {can('roles.manage') && <Route path="roles" element={<RolesPage />} />}
         {/* Una dirección desconocida, o de una sección que el rol no permite, lleva a la intranet. */}

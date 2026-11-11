@@ -33,9 +33,9 @@ Los permisos están en `src/domain/types.ts` (`Permission`) y sus textos en `src
 
 ## Intranet
 
-Pantalla principal de la aplicación (dirección `/`), visible para todos. Los documentos se organizan según el **mapa de procesos** de la institución: la portada muestra cada macroproceso (gobernantes, productivos, de apoyo) con sus procesos, y cada proceso o subproceso tiene una carpeta por tipo de documento (Manual, Procedimiento, Registro...). Arriba hay un buscador para toda la intranet. La dirección guarda el proceso y la carpeta abiertos, así que se pueden compartir enlaces directos.
+Pantalla principal de la aplicación (dirección `/`), visible para todos. Los documentos se organizan según el **mapa de procesos** de la institución: la portada muestra cada macroproceso (gobernantes, productivos, de apoyo) con sus procesos, y cada proceso o subproceso tiene una carpeta por tipo de documento (Manual, Procedimiento, Registro...). El buscador de toda la intranet está en la cabecera. La dirección guarda el proceso y la carpeta abiertos, así que se pueden compartir enlaces directos.
 
-Vistas: **Mapa de procesos** (lo publicado), **Mis documentos** (con el permiso *Publicar documentos*), **Por aprobar** (con *Aprobar publicaciones*) y **Configuración** (con *Configurar la intranet*).
+Secciones del menú lateral: **Intranet** (el mapa de procesos con lo publicado, `/`), **Mis documentos** (`/mis-documentos`, con el permiso *Publicar documentos*), **Por aprobar** (`/por-aprobar`, con *Aprobar publicaciones*) y **Configuración** (`/configuracion`, con *Configurar la intranet*). Mis documentos y Por aprobar muestran cuántos documentos tienen. Quien puede publicar tiene el botón **Publicar documento** en el menú.
 
 ### Mapa de procesos y tipos de documento
 

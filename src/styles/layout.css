@@ -121,8 +121,10 @@
   top: 0;
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: 22px;
   height: 100dvh;
+  /* En pantallas bajas (portátiles con escalado), el menú se desplaza en lugar de cortarse. */
+  overflow-y: auto;
   padding: 24px 18px;
   background: var(--surface);
   border-right: 1px solid var(--border);
@@ -203,6 +205,52 @@
   font-weight: 500;
 }
 
+/* Contador de documentos junto al nombre de la sección (Mis documentos, Por aprobar). */
+.menu-label {
+  flex: 1;
+  min-width: 0;
+}
+
+.menu-count {
+  min-width: 26px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--primary-050);
+  color: var(--primary);
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-align: center;
+}
+
+.menu a.active .menu-count {
+  background: var(--on-primary);
+}
+
+.sidebar-publish {
+  flex: none;
+}
+
+/* Pantallas bajas: logotipo más chico y sin el eslogan, para que el menú quepa sin desplazarse. */
+@media (max-height: 760px) {
+  .sidebar {
+    gap: 16px;
+    padding-block: 16px;
+  }
+
+  .brand-logo img {
+    max-width: 84px;
+  }
+
+  .menu a,
+  .menu button {
+    min-height: 42px;
+  }
+
+  .sidebar-footer {
+    display: none;
+  }
+}
+
 .sidebar-footer {
   display: grid;
   gap: 6px;
@@ -236,6 +284,31 @@
   font-size: 1.73rem;
   font-weight: 600;
   line-height: 1.2;
+}
+
+/* Si la sección pone su buscador en la cabecera, este ocupa el lugar del título, que queda solo para lectores de pantalla. */
+.topbar-slot {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+}
+
+.topbar-slot:empty {
+  display: none;
+}
+
+.topbar:has(.topbar-slot:not(:empty)) h1 {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.topbar-search {
+  flex: 1;
+  max-width: 640px;
 }
 
 .topbar-user {

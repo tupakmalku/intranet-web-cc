@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { createPortal } from 'react-dom'
+import { Navigate, useNavigate, useSearchParams } from 'react-router-dom'
 import { backend } from '../backend/index.ts'
 import type { IntranetCatalog } from '../components/intranet/catalog.ts'
 import DocumentDetail from '../components/intranet/DocumentDetail.tsx'
@@ -8,10 +9,10 @@ import DocumentViewer from '../components/intranet/DocumentViewer.tsx'
 import IntranetSettings from '../components/intranet/IntranetSettings.tsx'
 import ProcessMap from '../components/intranet/ProcessMap.tsx'
 import ProcessView from '../components/intranet/ProcessView.tsx'
-import Button from '../components/ui/Button.tsx'
 import EmptyState from '../components/ui/EmptyState.tsx'
 import Icon from '../components/ui/Icon.tsx'
 import { useSession } from '../context/auth.ts'
+import { useLayout } from '../context/layout.ts'
 import { useToast } from '../context/toasts.ts'
 import { documentAccess } from '../domain/documents.ts'
 import { processPath } from '../domain/processes.ts'
@@ -20,9 +21,7 @@ import DocumentoForm from '../forms/DocumentoForm.tsx'
 import { errorMessage } from '../lib/errors.ts'
 import { saveFile } from '../lib/files.ts'
 import { useQuery } from '../lib/useQuery.ts'
-
-/** Vistas de la intranet. Van en la dirección (?vista=), junto con el proceso y la carpeta abiertos. */
-type Tab = 'mapa' | 'mios' | 'aprobar' | 'config'
+import { VIEW_PATHS, type IntranetView } from './intranetViews.ts'
 
 const normalize = (text: string) =>
   text
@@ -37,16 +36,17 @@ const normalize = (text: string) =>
  * documento. Las jefaturas suben documentos, el aprobador los publica y quien
  * configura la intranet mantiene el mapa y los tipos.
  */
-export default function IntranetPage() {
+export default function IntranetPage({ view }: { view: IntranetView }) {
   const session = useSession()
-  const { user, can } = session
+  const { user } = session
   const toast = useToast()
   const [params, setParams] = useSearchParams()
+  const navigate = useNavigate()
   const [search, setSearch] = useState('')
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [viewing, setViewing] = useState<IntranetDocument | null>(null)
-  const [creating, setCreating] = useState(false)
   const [actionError, setActionError] = useState('')
+  const { topbarSlot, refreshCounts } = useLayout()
 
   const query = useQuery(async () => {
     const [documents, processes, types, roles, users] = await Promise.all([
@@ -60,35 +60,45 @@ export default function IntranetPage() {
     return { documents, catalog }
   }, [])
 
+  // Direcciones antiguas, de cuando las vistas eran pestañas (/?vista=mios): se llevan a su sección.
+  const legacyView = params.get('vista') as IntranetView | null
+  if (legacyView) {
+    const rest = new URLSearchParams(params)
+    rest.delete('vista')
+    return <Navigate to={{ pathname: VIEW_PATHS[legacyView] ?? VIEW_PATHS.mapa, search: rest.size ? `?${rest}` : '' }} replace />
+  }
+
   if (query.error) return <p className="notice notice-error">{query.error}</p>
   if (!query.data) return <p className="loading">Cargando…</p>
 
   const { documents, catalog } = query.data
-  const canPublish = can('documents.publish')
-  const canApprove = can('documents.approve')
-  const canConfigure = can('intranet.configure')
   const published = documents.filter((d) => d.status === 'published')
   const mine = documents.filter((d) => d.ownerId === user.id)
   const toReview = documents.filter((d) => d.status === 'pending')
-
-  const tabs: { id: Tab; label: string; count?: number }[] = [
-    { id: 'mapa', label: 'Mapa de procesos' },
-    ...(canPublish ? [{ id: 'mios' as const, label: 'Mis documentos', count: mine.length }] : []),
-    ...(canApprove ? [{ id: 'aprobar' as const, label: 'Por aprobar', count: toReview.length }] : []),
-    ...(canConfigure ? [{ id: 'config' as const, label: 'Configuración' }] : []),
-  ]
-  const requested = params.get('vista') as Tab | null
-  const tab: Tab = tabs.some((t) => t.id === requested) ? requested! : 'mapa'
+  // Las vistas son secciones del menú lateral; App.tsx solo crea las que el rol permite.
+  const tab = view
   const processId = params.get('proceso')
   const typeId = params.get('tipo')
+  // El formulario de publicar se abre desde el menú lateral con ?publicar=1, conservando el proceso y la carpeta abiertos.
+  const creating = params.has('publicar')
 
-  /** Cambia de vista, proceso o carpeta dejando rastro en el historial (el botón atrás funciona). */
-  function go(next: { vista?: Tab; proceso?: string | null; tipo?: string | null }) {
-    const entries = Object.entries({ vista: next.vista === 'mapa' ? null : next.vista, proceso: next.proceso, tipo: next.tipo }).filter(
-      (entry): entry is [string, string] => !!entry[1],
-    )
-    setParams(new URLSearchParams(entries))
+  /** Abre un proceso o carpeta del mapa dejando rastro en el historial (el botón atrás funciona). */
+  function go(next: { proceso?: string | null; tipo?: string | null }) {
+    const entries = Object.entries({ proceso: next.proceso, tipo: next.tipo }).filter((entry): entry is [string, string] => !!entry[1])
+    navigate({ pathname: VIEW_PATHS.mapa, search: entries.length ? `?${new URLSearchParams(entries)}` : '' })
     setSearch('')
+  }
+
+  function closeForm() {
+    const next = new URLSearchParams(params)
+    next.delete('publicar')
+    setParams(next, { replace: true })
+  }
+
+  /** Vuelve a leer los documentos y actualiza los contadores del menú. */
+  function reload() {
+    query.reload()
+    refreshCounts()
   }
 
   async function download(document: IntranetDocument) {
@@ -113,7 +123,7 @@ export default function IntranetPage() {
   const selected = documents.find((d) => d.id === selectedId)
 
   function content() {
-    if (tab === 'config') return <IntranetSettings catalog={catalog} documents={documents} onChanged={query.reload} />
+    if (tab === 'config') return <IntranetSettings catalog={catalog} documents={documents} onChanged={reload} />
 
     if (tab === 'mios' || tab === 'aprobar') {
       const list = (tab === 'mios' ? mine : toReview).filter(matches)
@@ -155,36 +165,25 @@ export default function IntranetPage() {
 
   return (
     <>
-      {tabs.length > 1 && (
-        <div className="tabs" role="tablist" aria-label="Vistas de la intranet">
-          {tabs.map((t) => (
-            <button key={t.id} type="button" role="tab" aria-selected={t.id === tab} className={t.id === tab ? 'active' : ''} onClick={() => go({ vista: t.id })}>
-              {t.label}
-              {t.count !== undefined && ` (${t.count})`}
-            </button>
-          ))}
-        </div>
-      )}
-
-      {tab !== 'config' && (
-        <div className="toolbar toolbar-spread intranet-toolbar">
-          <label className="input-box search-box">
+      {/* El buscador va en la cabecera, en lugar del título. Desde Configuración, escribir lleva al mapa con los resultados. */}
+      {topbarSlot &&
+        createPortal(
+          <label className="input-box search-box topbar-search">
             <Icon name="search" size={18} />
             <span className="sr-only">Buscar documentos</span>
             <input
               type="search"
-              placeholder={tab === 'mapa' ? 'Buscar en toda la intranet: código, título, proceso…' : 'Buscar por código, título o proceso'}
+              placeholder={tab === 'mios' || tab === 'aprobar' ? 'Buscar por código, título o proceso' : 'Buscar en toda la intranet: código, título, proceso…'}
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value
+                if (tab === 'config') go({})
+                setSearch(value)
+              }}
             />
-          </label>
-          {canPublish && (
-            <Button icon="upload" onClick={() => setCreating(true)} className="toolbar-push">
-              Publicar documento
-            </Button>
-          )}
-        </div>
-      )}
+          </label>,
+          topbarSlot,
+        )}
 
       {actionError && (
         <p className="notice notice-error" role="alert">
@@ -194,7 +193,7 @@ export default function IntranetPage() {
 
       {content()}
 
-      {selected && <DocumentDetail document={selected} catalog={catalog} onChanged={query.reload} onClose={() => setSelectedId(null)} />}
+      {selected && <DocumentDetail document={selected} catalog={catalog} onChanged={reload} onClose={() => setSelectedId(null)} />}
 
       {viewing && <DocumentViewer document={viewing} canDownload={documentAccess(viewing, session).download} onClose={() => setViewing(null)} />}
 
@@ -204,12 +203,11 @@ export default function IntranetPage() {
           // Desde una carpeta abierta, el documento nuevo empieza en ese proceso y ese tipo.
           initialProcessId={tab === 'mapa' ? processId : null}
           initialTypeId={tab === 'mapa' ? typeId : null}
-          onClose={() => setCreating(false)}
+          onClose={closeForm}
           onSaved={() => {
-            setCreating(false)
             toast('Documento enviado a aprobación')
-            go({ vista: 'mios' })
-            query.reload()
+            navigate(VIEW_PATHS.mios)
+            reload()
           }}
         />
       )}

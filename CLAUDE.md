@@ -48,6 +48,12 @@ Todo cambio en el contrato `Backend` se implementa en **las dos** versiones.
 
 **Visor de documentos.** `DocumentViewer` muestra PDF, .docx (mammoth) y Excel/CSV (SheetJS, instalado desde el tarball del CDN de SheetJS) en el navegador, con marca de agua en los documentos de solo lectura. De Word solo se acepta `.docx`. Los tipos y el tamaño máximo de archivo están en `src/lib/files.ts`.
 
+## Pantalla objetivo
+
+La mayoría de los usuarios usa portátiles de 14" a 1920×1080, normalmente con escalado de Windows del 125–150 % (unos 1536×730 o 1280×600 px CSS útiles). Diseña y comprueba primero a ese tamaño: el alto es escaso, así que evita filas que solo contengan un botón y espacios verticales grandes. El móvil es secundario.
+
+**Menú y cabecera.** Las vistas de la intranet (mapa, mis documentos, por aprobar, configuración) son rutas propias (`src/pages/intranetViews.ts`) que renderizan `IntranetPage` con la prop `view`, y aparecen como secciones del menú lateral en `AppLayout`, que también cuenta los documentos de cada una y tiene el botón de publicar (abre el formulario con `?publicar=1`). Las direcciones antiguas `/?vista=…` redirigen a su ruta. `AppLayout` deja un espacio en la cabecera (`topbarSlot`); una sección lo llena con `createPortal` y entonces el título queda solo para lectores de pantalla. La intranet pone ahí su buscador. Ambas cosas se comparten con `useLayout()` (`src/context/layout.ts`); tras cambiar un documento, la intranet llama a `refreshCounts()`.
+
 ## Convenciones
 
 - Identificadores en inglés; comentarios y todo texto visible para el usuario en **español**. Los componentes llevan nombre en inglés; las páginas y formularios, en español (`IntranetPage`, `UsuariosPage`, `DocumentoForm`, `RevisionForm`).

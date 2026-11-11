@@ -1,16 +1,5 @@
 /* Piezas de la intranet: mapa de procesos, carpetas, visor de documentos y configuración. */
 
-/* ---------- Barra de búsqueda ---------- */
-
-.intranet-toolbar {
-  flex-wrap: wrap;
-}
-
-/* El botón de publicar se va al extremo derecho, aunque los filtros pasen a otra fila. */
-.toolbar-push {
-  margin-left: auto;
-}
-
 /* ---------- Visor ---------- */
 
 .modal-viewer {
@@ -106,15 +95,6 @@
 @media (max-width: 760px) {
   .modal-viewer {
     height: 100dvh;
-  }
-
-  .intranet-toolbar .search-box {
-    flex: 1 1 100%;
-    max-width: none;
-  }
-
-  .toolbar-push {
-    width: 100%;
   }
 }
 
