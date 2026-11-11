@@ -1,5 +1,4 @@
 import { useState, type FormEvent } from 'react'
-import { backend } from '../backend/index.ts'
 import AuthShell from '../components/AuthShell.tsx'
 import Button from '../components/ui/Button.tsx'
 import Field from '../components/ui/Field.tsx'
@@ -29,7 +28,7 @@ export default function IngresoPage() {
   }
 
   return (
-    <AuthShell title={greeting()} intro="Ingresa con tu correo institucional.">
+    <AuthShell title={greeting()}>
       <form className="form" onSubmit={handleSubmit} noValidate>
         {/* La sesión anterior se cerró sola: por inactividad o por su duración máxima. */}
         {notice && !failure && (
@@ -65,8 +64,6 @@ export default function IngresoPage() {
         <Button type="submit" size="large" fullWidth disabled={saving}>
           {saving ? 'Ingresando…' : 'Ingresar'}
         </Button>
-        <p className="help">Si olvidaste tu contraseña, pide al oficial de seguridad de la información que la restablezca.</p>
-        {backend.demoNotice && <p className="login-demo">{backend.demoNotice}</p>}
       </form>
     </AuthShell>
   )

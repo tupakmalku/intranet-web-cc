@@ -21,7 +21,7 @@ import { demoPhoto } from './demoPhotos.ts'
 import { BackendError, type Backend } from '../types.ts'
 import { deleteFile, getFile, putFile } from './files.ts'
 import { sampleFile } from './sampleFiles.ts'
-import { createSeed, DEMO_PASSWORD, type Db, type StoredUser } from './seed.ts'
+import { createSeed, type Db, type StoredUser } from './seed.ts'
 import { newId } from '../../lib/ids.ts'
 
 /*
@@ -160,7 +160,6 @@ const sameText = (a: string, b: string) => a.trim().toLowerCase() === b.trim().t
 export function createLocalBackend(): Backend {
   return {
     name: 'local',
-    demoNotice: `Modo de demostración: los datos se guardan solo en este navegador. Usuarios: admin, oficial, jefatura, aprobador o colaborador @demo.ec, con la contraseña temporal ${DEMO_PASSWORD}`,
 
     auth: {
       async getSession() {

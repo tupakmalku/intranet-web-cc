@@ -145,8 +145,6 @@ export interface DocumentsApi {
 export interface Backend {
   /** Nombre de la implementación: "supabase" o "local". */
   name: string
-  /** Aviso para la pantalla de ingreso cuando el backend es de demostración. */
-  demoNotice?: string
   auth: AuthApi
   users: UsersApi
   roles: RolesApi

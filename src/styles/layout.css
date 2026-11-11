@@ -171,19 +171,6 @@
   color: var(--ink-2);
 }
 
-.login-demo {
-  padding: 12px 14px;
-  border-radius: var(--radius-field);
-  background: var(--accent-050);
-  color: var(--ink-2);
-  font-size: 0.87rem;
-}
-
-.login-demo strong {
-  color: var(--ink);
-  font-weight: 500;
-}
-
 /* ---------- Estructura ---------- */
 
 .app {
