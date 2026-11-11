@@ -1,0 +1,8 @@
+/* El orden importa: variables, base, piezas, pantallas y, al final, ajustes por tamaño. */
+@import './tokens.css';
+@import './base.css';
+@import './components.css';
+@import './details.css';
+@import './intranet.css';
+@import './layout.css';
+@import './responsive.css';

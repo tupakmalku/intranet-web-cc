@@ -1,0 +1,319 @@
+/* Estructura de las pantallas: ingreso, barra lateral, cabecera y rejilla del panel. */
+
+/* ---------- Ingreso ---------- */
+
+.login {
+  display: grid;
+  grid-template-columns: minmax(320px, 5fr) 7fr;
+  min-height: 100dvh;
+  background: var(--surface);
+}
+
+.login-brand {
+  position: relative;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 20px;
+  padding: 48px 32px;
+  overflow: hidden;
+  background: var(--primary);
+  color: var(--on-primary);
+  text-align: center;
+}
+
+/* Dos planos inclinados como fondo del panel de marca. */
+.login-brand::before,
+.login-brand::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  height: 62%;
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+
+.login-brand::before {
+  left: -30%;
+  width: 110%;
+  background: var(--primary-dark);
+}
+
+.login-brand::after {
+  right: -45%;
+  width: 110%;
+  height: 44%;
+  background: var(--accent);
+  opacity: 0.22;
+}
+
+.login-brand > * {
+  position: relative;
+  z-index: 1;
+}
+
+.login-brand img {
+  max-width: 60%;
+  height: auto;
+}
+
+.login-brand h2 {
+  font-size: 1.6rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.login-brand p {
+  max-width: 28ch;
+  font-size: 1.2rem;
+  font-weight: 300;
+}
+
+.login-brand small {
+  max-width: 34ch;
+  font-size: 0.93rem;
+  opacity: 0.85;
+}
+
+.login-panel {
+  display: grid;
+  place-items: center;
+  padding: 40px 24px;
+}
+
+.login-form {
+  width: min(100%, 380px);
+}
+
+.login-form h1 {
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+.login-form > p {
+  margin-top: -8px;
+  color: var(--ink-2);
+}
+
+.login-demo {
+  padding: 12px 14px;
+  border-radius: var(--radius-field);
+  background: var(--accent-050);
+  color: var(--ink-2);
+  font-size: 0.87rem;
+}
+
+.login-demo strong {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+/* ---------- Estructura ---------- */
+
+.app {
+  display: grid;
+  grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+  min-height: 100dvh;
+}
+
+.sidebar {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  height: 100dvh;
+  padding: 24px 18px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 6px;
+  color: var(--primary);
+  font-size: 0.87rem;
+  line-height: 1.15;
+}
+
+.brand span {
+  display: grid;
+  min-width: 0;
+}
+
+.brand strong {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.brand img {
+  flex: none;
+  max-width: 44px;
+  height: auto;
+}
+
+/* Con el logotipo oficial (vertical, con el nombre de la institución): centrado y debajo el nombre de la aplicación. */
+.brand-logo {
+  flex-direction: column;
+  gap: 8px;
+  padding-bottom: 6px;
+  text-align: center;
+}
+
+.brand-logo img {
+  max-width: 116px;
+}
+
+.brand-logo strong {
+  font-size: 1.05rem;
+  letter-spacing: 0.01em;
+}
+
+.menu {
+  display: grid;
+  gap: 6px;
+}
+
+.menu a,
+.menu button {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 46px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: var(--radius-field);
+  background: transparent;
+  color: var(--ink-2);
+  text-align: left;
+  cursor: pointer;
+}
+
+.menu a:hover,
+.menu button:hover {
+  background: var(--primary-050);
+  color: var(--primary);
+}
+
+.menu a.active {
+  background: var(--primary);
+  color: var(--on-primary);
+  font-weight: 500;
+}
+
+.sidebar-footer {
+  display: grid;
+  gap: 6px;
+  margin-top: auto;
+}
+
+.sidebar-slogan {
+  padding: 16px;
+  border-radius: var(--radius);
+  background: var(--primary);
+  color: var(--on-primary);
+  font-size: 0.93rem;
+  text-align: center;
+}
+
+.main {
+  min-width: 0;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 28px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.topbar h1 {
+  font-size: 1.73rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.topbar-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.topbar-user-text {
+  display: grid;
+  line-height: 1.2;
+  text-align: right;
+}
+
+.topbar-user-text strong {
+  font-weight: 500;
+}
+
+.topbar-user-text small {
+  color: var(--ink-2);
+  font-size: 0.8rem;
+}
+
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: var(--accent-050);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.content {
+  padding: 24px 28px 40px;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 14px;
+}
+
+/* ---------- Panel ---------- */
+
+.dashboard {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.area-summary {
+  grid-column: 1 / -1;
+}
+
+.area-progress {
+  grid-column: span 7;
+}
+
+.area-agenda {
+  grid-column: span 5;
+}
+
+/* ---------- Conexión no segura (main.tsx) ---------- */
+
+.insecure-connection {
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  padding: 24px 16px;
+}
+
+.insecure-connection .empty-state {
+  max-width: 440px;
+}
+
+.insecure-connection .icon {
+  color: var(--primary);
+}

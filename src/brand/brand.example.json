@@ -1,0 +1,57 @@
+{
+  "_comment": "Plantilla de brand.json: copiala como public/brand.json (o junto al index.html publicado) y cambia los valores. Todo es opcional: lo que falte se toma de la institucion compilada (VITE_BRAND). Ver README, seccion 'Adaptarla a otra institucion'.",
+
+  "appName": "Intranet",
+  "institution": "Cooperativa de Ahorro y Crédito Ejemplo",
+  "shortName": "Cooperativa Ejemplo",
+  "slogan": "Juntos crecemos",
+  "motto": "Manuales, procedimientos y políticas de la institución en un solo lugar.",
+
+  "logo": {
+    "onLight": "/brands/ejemplo.svg",
+    "onDark": "/brands/ejemplo-blanco.svg",
+    "favicon": "/brands/ejemplo-icono.png"
+  },
+
+  "colors": {
+    "primary": "#0b6b3a",
+    "accent": "#f2b705",
+    "onPrimary": "#ffffff",
+
+    "series1": "#0b6b3a",
+    "series2": "#f2b705",
+
+    "text": "#1b2a22",
+    "textMuted": "#4f6358",
+    "textSubtle": "#7f9187",
+    "background": "#f4f7f5",
+    "surface": "#ffffff",
+    "border": "#dde7e1",
+    "borderField": "#c3d3ca",
+
+    "danger": "#b3261e",
+    "dangerSoft": "#fdeceb",
+    "warning": "#8a5200",
+    "warningStrong": "#c77700",
+    "warningSoft": "#fff2dc",
+    "success": "#17663a",
+    "successSoft": "#e5f5ec"
+  },
+
+  "typography": {
+    "body": "Nunito Sans",
+    "headings": "Nunito Sans",
+    "stylesheetUrl": "https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;500;600&display=swap"
+  },
+
+  "shape": {
+    "radius": 10,
+    "fieldRadius": 8
+  },
+
+  "processTones": [
+    { "band": "#fbe7a6", "text": "#1b2a22", "accent": "#9a7400" },
+    { "band": "#0b6b3a", "text": "#ffffff" },
+    { "band": "#dcefe4", "text": "#1b2a22", "accent": "#0b6b3a" }
+  ]
+}

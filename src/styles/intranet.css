@@ -1,0 +1,508 @@
+/* Piezas de la intranet: mapa de procesos, carpetas, visor de documentos y configuración. */
+
+/* ---------- Barra de búsqueda ---------- */
+
+.intranet-toolbar {
+  flex-wrap: wrap;
+}
+
+/* El botón de publicar se va al extremo derecho, aunque los filtros pasen a otra fila. */
+.toolbar-push {
+  margin-left: auto;
+}
+
+/* ---------- Visor ---------- */
+
+.modal-viewer {
+  width: min(100% - 32px, 1200px);
+  height: min(100dvh - 48px, 980px);
+}
+
+.modal-viewer .modal-body {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 16px;
+}
+
+.viewer {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-field);
+  background: var(--background);
+  overflow: hidden;
+}
+
+.viewer-frame {
+  flex: 1;
+  width: 100%;
+  min-height: 60dvh;
+  border: 0;
+  background: var(--surface);
+}
+
+.viewer-sheet {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  padding: 8px 12px 12px;
+  background: var(--surface);
+}
+
+.viewer-sheet .tabs {
+  margin-bottom: 8px;
+}
+
+.viewer-table {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+
+.viewer-table .table {
+  width: auto;
+  min-width: 100%;
+  font-size: 0.87rem;
+}
+
+.viewer-table td {
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+/* Número de fila, fijo al desplazarse de lado. */
+.viewer-table th {
+  position: sticky;
+  left: 0;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  background: var(--background);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* La marca de agua cubre el documento pero deja pasar los clics y el desplazamiento. */
+.viewer-watermark {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-repeat: repeat;
+}
+
+.viewer-readonly {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-right: auto;
+  color: var(--ink-2);
+  font-size: 0.93rem;
+}
+
+@media (max-width: 760px) {
+  .modal-viewer {
+    height: 100dvh;
+  }
+
+  .intranet-toolbar .search-box {
+    flex: 1 1 100%;
+    max-width: none;
+  }
+
+  .toolbar-push {
+    width: 100%;
+  }
+}
+
+/* ---------- Mapa de procesos ---------- */
+
+/* Cada macroproceso recibe su tono (--tone, --tone-band, --tone-on, --tone-soft) desde la marca: processTone() en src/brand/index.ts. */
+.process-map {
+  display: grid;
+  gap: 32px;
+}
+
+.macro {
+  display: grid;
+  gap: 14px;
+}
+
+/* La banda del macroproceso tiene forma de flecha, como en el mapa de procesos. */
+.macro-band {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 16px;
+  padding: 14px 44px 14px 32px;
+  background: var(--tone-band);
+  color: var(--tone-on);
+  clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 50%, calc(100% - 24px) 100%, 0 100%, 18px 50%);
+}
+
+.macro-band h2 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.13rem;
+  font-weight: 600;
+}
+
+.macro-code {
+  display: inline-grid;
+  place-items: center;
+  min-width: 30px;
+  height: 30px;
+  padding: 0 6px;
+  border-radius: 8px;
+  background: color-mix(in srgb, currentColor 16%, transparent);
+  font-size: 0.93rem;
+}
+
+.macro-count {
+  font-size: 0.87rem;
+  opacity: 0.85;
+}
+
+/* Procesos centrados bajo su macroproceso, todos del mismo ancho (en el celular, a lo ancho). */
+.process-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+}
+
+.process-grid > .process-card {
+  flex: 0 1 280px;
+  min-width: 0;
+}
+
+.process-card {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  padding: 16px 16px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-top: 4px solid var(--tone);
+  border-radius: var(--radius);
+}
+
+.process-card.is-empty {
+  border-top-color: var(--border-field);
+}
+
+.process-card-title {
+  display: grid;
+  gap: 2px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.process-card-title strong {
+  font-size: 1.03rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.process-card-title:hover strong {
+  color: var(--primary);
+  text-decoration: underline;
+}
+
+.process-card-title small {
+  color: var(--ink-2);
+  font-size: 0.8rem;
+  font-weight: 300;
+}
+
+.process-code {
+  color: var(--tone);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.process-card.is-empty .process-code {
+  color: var(--ink-3);
+}
+
+/* Carpetas y subprocesos de un proceso. */
+.folders {
+  display: grid;
+  gap: 2px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+
+.folders button,
+.folder-list button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ink);
+  font-size: 0.93rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.folders button > span:first-of-type,
+.folder-list button > span:first-of-type {
+  flex: 1;
+  min-width: 0;
+}
+
+.folders .icon,
+.folder-list .icon {
+  flex: none;
+  color: var(--tone, var(--primary));
+}
+
+.folders button:hover,
+.folder-list button:hover {
+  background: var(--tone-soft, var(--primary-050));
+}
+
+.folders .is-subprocess {
+  color: var(--ink-2);
+}
+
+.folder-count {
+  flex: none;
+  min-width: 24px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: var(--background);
+  color: var(--ink-2);
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+/* ---------- Proceso abierto ---------- */
+
+.process-view {
+  display: grid;
+  gap: 16px;
+}
+
+.breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  color: var(--ink-3);
+  font-size: 0.87rem;
+}
+
+.breadcrumb span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.breadcrumb button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--primary);
+  font-size: inherit;
+  cursor: pointer;
+}
+
+.breadcrumb button:hover {
+  text-decoration: underline;
+}
+
+.breadcrumb-static {
+  color: var(--ink-2);
+}
+
+.process-header {
+  display: grid;
+  gap: 2px;
+  padding-left: 14px;
+  border-left: 4px solid var(--tone);
+}
+
+.process-header h2 {
+  font-size: 1.47rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.process-header small {
+  color: var(--ink-2);
+  font-size: 0.87rem;
+  font-weight: 300;
+}
+
+.subprocess-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  border: 1px solid var(--border-field);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 0.93rem;
+  cursor: pointer;
+}
+
+.chip:hover {
+  border-color: var(--tone);
+  background: var(--tone-soft);
+}
+
+.chip .icon {
+  color: var(--tone);
+}
+
+.process-body {
+  display: grid;
+  grid-template-columns: 230px minmax(0, 1fr);
+  align-items: start;
+  gap: 16px;
+}
+
+.folder-list {
+  display: grid;
+  gap: 2px;
+  padding: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.folder-list button.active {
+  background: var(--tone-soft);
+  color: var(--tone);
+  font-weight: 500;
+}
+
+.process-documents {
+  min-width: 0;
+}
+
+.cell-process {
+  min-width: 180px;
+  color: var(--ink-2);
+  font-size: 0.87rem;
+}
+
+.detail-wide {
+  grid-column: 1 / -1;
+}
+
+/* ---------- Configuración ---------- */
+
+.settings {
+  display: grid;
+  gap: 18px;
+}
+
+.settings-tree,
+.settings-tree ul {
+  display: grid;
+  gap: 2px;
+}
+
+.settings-tree ul {
+  margin-left: 18px;
+  padding-left: 12px;
+  border-left: 2px solid var(--border);
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 4px 6px 10px;
+  border-radius: 10px;
+}
+
+.settings-row:hover {
+  background: var(--background);
+}
+
+.settings-row.level-0 strong {
+  font-weight: 600;
+}
+
+.settings-row.level-2 strong {
+  font-weight: 400;
+}
+
+.settings-name {
+  display: grid;
+  min-width: 0;
+}
+
+.settings-name small {
+  color: var(--ink-2);
+  font-size: 0.8rem;
+  font-weight: 300;
+}
+
+.icon-button:disabled {
+  opacity: 0.3;
+  cursor: default;
+  background: transparent;
+}
+
+@media (max-width: 760px) {
+  .macro-band {
+    padding: 12px 34px 12px 26px;
+  }
+
+  .process-grid > .process-card {
+    flex-basis: 100%;
+  }
+
+  .process-body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* En móvil las carpetas pasan a una fila deslizable sobre la tabla. */
+  .folder-list {
+    display: flex;
+    overflow-x: auto;
+  }
+
+  .folder-list button {
+    width: auto;
+    white-space: nowrap;
+  }
+
+  .settings-tree ul {
+    margin-left: 6px;
+    padding-left: 8px;
+  }
+
+  .settings-row {
+    flex-wrap: wrap;
+  }
+}

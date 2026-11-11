@@ -1,0 +1,66 @@
+/*
+ * Variables de diseño. Todos los estilos de la aplicación leen de aquí.
+ *
+ * Nada de la institución se escribe en este archivo: cada valor lee primero
+ * una variable --brand-*, que pone src/brand/index.ts a partir de la marca
+ * activa (src/brand/institutions/*.ts o brand.json). El segundo valor de cada
+ * var() es el respaldo cuando la marca no lo indica. Los tonos claros y
+ * oscuros se derivan solos de los colores principal y de acento.
+ */
+:root {
+  /* Marca. */
+  --primary: var(--brand-primary, #1f4e79);
+  --accent: var(--brand-accent, #3aa6c9);
+  --on-primary: var(--brand-on-primary, #ffffff);
+  --series-1: var(--brand-series-1, var(--primary));
+  --series-2: var(--brand-series-2, var(--accent));
+  --font: var(--brand-font, system-ui), system-ui, 'Segoe UI', sans-serif;
+  --font-headings: var(--brand-font-headings, var(--brand-font, system-ui)), system-ui, 'Segoe UI', sans-serif;
+
+  /* Neutros. */
+  --ink: var(--brand-ink, #14263b);
+  --ink-2: var(--brand-ink-2, #51627a);
+  --ink-3: var(--brand-ink-3, #7d8ca1);
+  --background: var(--brand-background, #f3f6fa);
+  --surface: var(--brand-surface, #ffffff);
+  --border: var(--brand-border, #dce4ee);
+  --border-field: var(--brand-border-field, #c5d1e0);
+
+  /* Derivados de la marca: se mezclan con la superficie, así funcionan con cualquier fondo. */
+  --primary-dark: color-mix(in srgb, var(--primary) 76%, black);
+  --primary-050: color-mix(in srgb, var(--primary) 9%, var(--surface));
+  --accent-strong: color-mix(in srgb, var(--accent) 68%, black);
+  --accent-050: color-mix(in srgb, var(--accent) 13%, var(--surface));
+  --focus-ring: color-mix(in srgb, var(--accent) 40%, transparent);
+
+  /* Estados: conviene no cambiarlos, para que signifiquen lo mismo en cualquier institución. */
+  --red: var(--brand-red, #b3261e);
+  --red-050: var(--brand-red-050, #fdeceb);
+  --amber: var(--brand-amber, #8a5200);
+  --amber-strong: var(--brand-amber-strong, #c77700);
+  --amber-050: var(--brand-amber-050, #fff2dc);
+  --green: var(--brand-green, #17663a);
+  --green-050: var(--brand-green-050, #e5f5ec);
+
+  /* Forma. */
+  --radius: var(--brand-radius, 14px);
+  --radius-field: var(--brand-radius-field, 12px);
+  --sidebar-width: 232px;
+  --shadow-floating: 0 18px 48px color-mix(in srgb, var(--ink) 22%, transparent);
+
+  font-family: var(--font);
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.45;
+  color: var(--ink);
+  background: var(--background);
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Títulos con la familia de encabezados de la marca (por defecto, la misma del texto). */
+h1,
+h2,
+h3 {
+  font-family: var(--font-headings);
+}

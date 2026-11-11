@@ -1,0 +1,1000 @@
+/* Piezas reutilizables: botones, campos, avisos, tarjetas, indicadores, tablas y modal. */
+
+/* ---------- Botones ---------- */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 46px;
+  padding: 0 20px;
+  border: 1.5px solid transparent;
+  border-radius: var(--radius-field);
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.button:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.button-primary {
+  background: var(--primary);
+  color: var(--on-primary);
+}
+
+.button-primary:hover {
+  background: var(--primary-dark);
+}
+
+.button-secondary {
+  background: var(--surface);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.button-secondary:hover {
+  background: var(--primary-050);
+}
+
+.button-light {
+  background: var(--surface);
+  color: var(--primary);
+}
+
+.button-text {
+  background: transparent;
+  color: var(--ink-2);
+}
+
+.button-text:hover {
+  background: var(--background);
+  color: var(--ink);
+}
+
+.button-danger {
+  background: var(--surface);
+  border-color: var(--red);
+  color: var(--red);
+}
+
+.button-danger:hover {
+  background: var(--red-050);
+}
+
+.button-full {
+  width: 100%;
+}
+
+.button-large {
+  min-height: 52px;
+  padding: 0 32px;
+  font-size: 1.07rem;
+  font-weight: 600;
+}
+
+.button-small {
+  min-height: 36px;
+  padding: 0 14px;
+  font-size: 0.87rem;
+  border-radius: 10px;
+}
+
+.icon-button {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 38px;
+  height: 38px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--ink-2);
+  cursor: pointer;
+}
+
+.icon-button:hover {
+  background: var(--primary-050);
+  color: var(--primary);
+}
+
+.icon-button.danger:hover {
+  background: var(--red-050);
+  color: var(--red);
+}
+
+.link {
+  color: var(--primary);
+  font-weight: 500;
+  font-size: 0.87rem;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+/* ---------- Formularios ---------- */
+
+.form {
+  display: grid;
+  gap: 16px;
+}
+
+.field {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+  gap: 6px;
+  align-content: start;
+}
+
+.field label,
+.form legend {
+  font-weight: 500;
+  font-size: 0.93rem;
+}
+
+.input-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 52px;
+  padding: 0 14px;
+  background: var(--surface);
+  border: 1.5px solid var(--border-field);
+  border-radius: var(--radius-field);
+  color: var(--ink);
+}
+
+.input-box:focus-within {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--focus-ring);
+}
+
+.input-box.has-error {
+  border-color: var(--red);
+}
+
+.input-box input {
+  flex: 1;
+  min-width: 0;
+  height: 48px;
+  border: 0;
+  background: transparent;
+  outline: none;
+  font-size: 1.07rem;
+}
+
+.input-box select {
+  flex: 1;
+  min-width: 0;
+  height: 48px;
+  border: 0;
+  background: transparent;
+  outline: none;
+  font: inherit;
+  font-size: 1.07rem;
+  color: inherit;
+  cursor: pointer;
+}
+
+.input-box-multiline {
+  align-items: flex-start;
+  padding-block: 13px;
+}
+
+.input-box textarea {
+  flex: 1;
+  min-width: 0;
+  min-height: 66px;
+  border: 0;
+  background: transparent;
+  outline: none;
+  resize: vertical;
+  font: inherit;
+  font-size: 1.07rem;
+  line-height: 1.4;
+  color: inherit;
+}
+
+.input-box textarea::placeholder {
+  color: var(--ink-3);
+  font-weight: 300;
+}
+
+.input-box:has(:disabled) {
+  background: var(--background);
+  color: var(--ink-2);
+}
+
+/* La recomendación va dentro del campo; si no cabe, se corta con puntos suspensivos. */
+.input-box input::placeholder {
+  color: var(--ink-3);
+  font-weight: 300;
+}
+
+.input-box input:placeholder-shown {
+  text-overflow: ellipsis;
+}
+
+.input-action {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  margin-right: -6px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ink-2);
+  cursor: pointer;
+}
+
+.help {
+  color: var(--ink-2);
+  font-size: 0.87rem;
+  font-weight: 300;
+}
+
+.error {
+  color: var(--red);
+  font-size: 0.87rem;
+}
+
+.field-pair {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 16px;
+}
+
+/* ---------- Selector segmentado ---------- */
+
+.segmented {
+  padding: 0;
+  border: 0;
+}
+
+.segmented legend {
+  margin-bottom: 6px;
+  padding: 0;
+  font-weight: 500;
+  font-size: 0.93rem;
+}
+
+/* El riel: las opciones se reparten el ancho, y pasan a otra fila si no caben. */
+.segmented-track {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+  gap: 4px;
+  padding: 4px;
+  background: var(--background);
+  border: 1.5px solid var(--border-field);
+  border-radius: var(--radius-field);
+}
+
+.segmented-track.has-error {
+  border-color: var(--red);
+}
+
+.segmented-track label {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  position: relative;
+  min-height: 42px;
+  padding: 6px 8px;
+  border: 1px solid transparent;
+  border-radius: calc(var(--radius-field) - 4px);
+  color: var(--ink-2);
+  font-size: 0.97rem;
+  font-weight: 400;
+  line-height: 1.2;
+  text-align: center;
+  cursor: pointer;
+  transition:
+    background-color 0.2s,
+    box-shadow 0.2s,
+    color 0.2s;
+}
+
+.segmented-track label:hover {
+  color: var(--primary);
+}
+
+/* La opción elegida: un velo del color de acento de la marca, con un halo difuminado. */
+.segmented-track label.selected {
+  background: color-mix(in srgb, var(--accent) 24%, var(--surface));
+  border-color: color-mix(in srgb, var(--accent) 60%, transparent);
+  box-shadow:
+    0 0 14px color-mix(in srgb, var(--accent) 50%, transparent),
+    inset 0 0 10px color-mix(in srgb, var(--surface) 70%, transparent);
+  color: var(--primary);
+  font-weight: 500;
+}
+
+/* El botón de opción real queda oculto, pero sigue recibiendo el foco y el teclado. */
+.segmented-track input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.segmented-track label:has(input:focus-visible) {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+
+/* ---------- Casillas ---------- */
+
+.checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.checkbox input {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin: 1px 0 0;
+  accent-color: var(--primary);
+  cursor: inherit;
+}
+
+.checkbox:has(:disabled) {
+  color: var(--ink-2);
+  cursor: not-allowed;
+}
+
+.checkbox small {
+  display: block;
+  color: var(--ink-2);
+  font-size: 0.87rem;
+  font-weight: 300;
+}
+
+.checkbox-group {
+  display: grid;
+  gap: 10px;
+  padding: 14px 16px;
+  border: 1.5px solid var(--border-field);
+  border-radius: var(--radius-field);
+}
+
+.checkbox-group legend {
+  padding: 0 6px;
+}
+
+/* ---------- Avisos ---------- */
+
+.notice {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: var(--radius-field);
+  font-size: 0.93rem;
+}
+
+.notice-error {
+  background: var(--red-050);
+  color: var(--red);
+}
+
+.notice-success {
+  background: var(--green-050);
+  color: var(--green);
+}
+
+.notice-warning {
+  background: var(--amber-050);
+  color: var(--amber);
+}
+
+.notice-info {
+  background: var(--primary-050);
+  color: var(--ink);
+}
+
+.notice-info > svg {
+  flex: none;
+  color: var(--primary);
+}
+
+/* Avisos flotantes de confirmación. */
+.toasts {
+  position: fixed;
+  left: 50%;
+  bottom: 28px;
+  z-index: 1100;
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+  translate: -50% 0;
+  pointer-events: none;
+}
+
+.toasts .notice {
+  border: 1px solid currentColor;
+  box-shadow: var(--shadow-floating);
+  white-space: nowrap;
+}
+
+/* ---------- Tarjetas ---------- */
+
+.card {
+  min-width: 0;
+  padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.card-header h2 {
+  font-size: 1.13rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.card-header p {
+  color: var(--ink-2);
+  font-size: 0.87rem;
+  font-weight: 300;
+}
+
+.empty-state {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  padding: 56px 24px;
+  background: var(--surface);
+  border: 1px dashed var(--border-field);
+  border-radius: var(--radius);
+  text-align: center;
+}
+
+.empty-state h2 {
+  font-size: 1.27rem;
+  font-weight: 600;
+}
+
+.empty-state p {
+  max-width: 52ch;
+  color: var(--ink-2);
+  margin-bottom: 8px;
+}
+
+/* ---------- Indicadores ---------- */
+
+.stat-tiles {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.stat-tile {
+  display: grid;
+  gap: 2px;
+  align-content: start;
+  padding: 16px 14px;
+  border-radius: var(--radius);
+}
+
+.stat-tile-icon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  margin-bottom: 10px;
+  border-radius: 50%;
+  color: var(--surface);
+}
+
+.stat-tile strong {
+  font-size: 1.47rem;
+  white-space: nowrap;
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.stat-tile-label {
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+.stat-tile small {
+  margin-top: 4px;
+  color: var(--ink-2);
+  font-size: 0.8rem;
+}
+
+.stat-tile-primary {
+  background: var(--primary-050);
+}
+
+.stat-tile-primary .stat-tile-icon {
+  background: var(--primary);
+}
+
+.stat-tile-success {
+  background: var(--green-050);
+}
+
+.stat-tile-success .stat-tile-icon {
+  background: var(--green);
+}
+
+.stat-tile-warning {
+  background: var(--amber-050);
+}
+
+.stat-tile-warning .stat-tile-icon {
+  background: var(--amber);
+}
+
+.stat-tile-alert {
+  background: var(--red-050);
+}
+
+.stat-tile-alert .stat-tile-icon {
+  background: var(--red);
+}
+
+.agenda {
+  display: grid;
+}
+
+.agenda li + li {
+  border-top: 1px solid var(--border);
+}
+
+.agenda button {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  display: grid;
+  gap: 4px;
+  justify-items: start;
+  padding: 10px 6px;
+  border-radius: 8px;
+}
+
+.agenda button:hover {
+  background: var(--background);
+}
+
+.agenda-name {
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+.agenda small {
+  color: var(--ink-2);
+  font-size: 0.8rem;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--background);
+  color: var(--ink-2);
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.badge-state {
+  background: var(--primary-050);
+  color: var(--primary);
+}
+
+.badge-overdue {
+  background: var(--red-050);
+  color: var(--red);
+  font-weight: 500;
+}
+
+.badge-active {
+  background: var(--green-050);
+  color: var(--green);
+}
+
+.badge-inactive {
+  background: var(--border);
+  color: var(--ink-2);
+}
+
+.badge-today {
+  background: var(--amber-050);
+  color: var(--amber);
+  font-weight: 500;
+}
+
+.meters {
+  display: grid;
+  gap: 16px;
+}
+
+.meters li {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 6px 10px;
+  align-items: center;
+}
+
+.meters .meter-track {
+  grid-column: 1 / -1;
+  grid-row: 2;
+}
+
+.meter-label {
+  font-size: 0.93rem;
+}
+
+.meter-value {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.meter-track {
+  display: block;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--background);
+  overflow: hidden;
+}
+
+.meter-bar {
+  display: block;
+  height: 100%;
+  border-radius: 4px;
+  background: var(--series-1);
+}
+
+/* ---------- Tablas ---------- */
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.toolbar-end {
+  justify-content: flex-end;
+}
+
+.toolbar-spread {
+  justify-content: space-between;
+}
+
+.search-box {
+  flex: 1;
+  max-width: 440px;
+  min-height: 46px;
+}
+
+.search-box input {
+  height: 42px;
+  font-size: 1rem;
+}
+
+.table-container {
+  /* Hace de referencia para lo que va posicionado dentro (los textos solo para lectores de
+     pantalla): sin esto se salen del área con desplazamiento y ensanchan toda la página en móvil. */
+  position: relative;
+  padding: 4px 8px;
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th {
+  padding: 12px;
+  color: var(--ink-2);
+  font-size: 0.8rem;
+  font-weight: 400;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.table td {
+  padding: 12px;
+  border-top: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.table .num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.table small {
+  display: block;
+  color: var(--ink-2);
+  font-size: 0.8rem;
+  font-weight: 300;
+}
+
+.table-name {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+}
+
+.table-name:hover {
+  color: var(--primary);
+  text-decoration: underline;
+}
+
+.table-name-static {
+  font-weight: 500;
+}
+
+.row-inactive td:not(:last-child) {
+  color: var(--ink-3);
+}
+
+.compact-list {
+  color: var(--ink-2);
+  font-size: 0.87rem;
+  line-height: 1.5;
+}
+
+.col-bar {
+  width: 24%;
+}
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  /* Con muchas secciones, se desplazan de lado en lugar de apretarse. */
+  overflow-x: auto;
+  white-space: nowrap;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.tabs button {
+  padding: 10px 18px;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  background: transparent;
+  color: var(--ink-2);
+  cursor: pointer;
+}
+
+.tabs button:hover {
+  color: var(--primary);
+}
+
+.tabs button.active {
+  border-bottom-color: var(--primary);
+  color: var(--primary);
+  font-weight: 500;
+}
+
+/* Segundo nivel bajo unas pestañas (por ejemplo, el estado dentro de Cumplimientos): filtros redondeados. */
+.tabs-pills {
+  gap: 8px;
+  padding-bottom: 2px;
+  border-bottom: 0;
+}
+
+.tabs-pills button {
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  font-size: 0.87rem;
+}
+
+.tabs-pills button:hover {
+  border-color: var(--primary);
+}
+
+.tabs-pills button.active {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: var(--on-primary);
+}
+
+.table-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 2px;
+}
+
+/* ---------- Modal ---------- */
+
+.modal {
+  width: min(100% - 32px, 520px);
+  max-height: min(100dvh - 48px, 860px);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: var(--shadow-floating);
+  overflow: hidden;
+}
+
+.modal[open] {
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-wide {
+  width: min(100% - 32px, 860px);
+}
+
+.modal::backdrop {
+  background: color-mix(in srgb, var(--primary-dark) 55%, transparent);
+}
+
+.modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 24px 28px 16px;
+}
+
+.modal-header h2 {
+  font-size: 1.6rem;
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+.modal-header p {
+  margin-top: 4px;
+  color: var(--ink-2);
+  font-weight: 300;
+}
+
+.modal-body {
+  /* Base "auto" y no 0: el modal no tiene alto fijo, y con base 0 Safari
+     reduce el cuerpo a nada en lugar de darle el alto de su contenido. */
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 8px 28px 24px;
+  overflow-y: auto;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 28px;
+  border-top: 1px solid var(--border);
+}
+
+/* ---------- Historial ---------- */
+
+.history {
+  display: grid;
+  gap: 12px;
+}
+
+.history h3 {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.timeline {
+  display: grid;
+  gap: 14px;
+}
+
+.timeline li {
+  display: grid;
+  gap: 4px;
+  padding-left: 14px;
+  border-left: 2px solid var(--primary-050);
+}
+
+.timeline-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+  font-size: 0.93rem;
+}
+
+.timeline-header strong {
+  font-weight: 500;
+}
+
+.timeline-header time,
+.timeline-next {
+  color: var(--ink-2);
+  font-size: 0.87rem;
+  font-weight: 300;
+}
+
+.timeline-comment {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* ---------- Carga ---------- */
+
+.loading {
+  padding: 56px 24px;
+  color: var(--ink-2);
+  text-align: center;
+}
+
+/* Tarjeta centrada que bloquea el paso hasta completar algo, como cambiar la contraseña temporal. */
+.gate {
+  display: grid;
+  gap: 16px;
+  width: min(100%, 460px);
+  padding: 32px;
+}
+
+.gate h1 {
+  font-size: 1.5rem;
+}
+
+.gate > p {
+  color: var(--ink-2);
+}
+
+.gate-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Contraseña temporal recién generada: grande y con letra de ancho fijo, para copiarla sin errores. */
+.secret {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1.5px dashed var(--border-field);
+  border-radius: var(--radius-field);
+  background: var(--background);
+}
+
+.secret code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 1.3rem;
+  letter-spacing: 0.06em;
+  overflow-wrap: anywhere;
+  user-select: all;
+}
+
+.centered-screen {
+  display: grid;
+  place-items: center;
+  min-height: 100dvh;
+  padding: 24px;
+}

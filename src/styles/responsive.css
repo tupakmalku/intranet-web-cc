@@ -1,0 +1,175 @@
+/* Ajustes para pantallas medianas y móviles. Se carga al final. */
+
+@media (max-width: 1180px) {
+  .area-progress,
+  .area-agenda {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 760px) {
+  /* En móvil el modal ocupa toda la pantalla, como una vista propia. */
+  .modal {
+    width: 100%;
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+    margin: 0;
+    border-radius: 0;
+  }
+
+  .modal-header {
+    padding: 20px 16px 12px;
+  }
+
+  .modal-body {
+    padding: 8px 16px 24px;
+  }
+
+  .modal-footer {
+    padding: 12px 16px;
+  }
+
+  .modal-footer .button-large {
+    flex: 1;
+  }
+
+  .toasts {
+    bottom: 84px;
+  }
+
+  .login {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+
+  .login-brand {
+    padding: 28px 24px;
+    gap: 10px;
+  }
+
+  .login-brand img {
+    width: 110px;
+  }
+
+  .login-brand p {
+    font-size: 1rem;
+  }
+
+  .login-brand small {
+    display: none;
+  }
+
+  .login-panel {
+    align-items: start;
+    padding: 28px 16px;
+  }
+
+  .app {
+    grid-template-columns: minmax(0, 1fr);
+    padding-bottom: 68px;
+  }
+
+  /* La barra lateral pasa a ser una barra de navegación fija al pie. */
+  .sidebar {
+    position: fixed;
+    inset: auto 0 0 0;
+    z-index: 1000;
+    height: auto;
+    padding: 6px 8px;
+    border-right: 0;
+    border-top: 1px solid var(--border);
+  }
+
+  .brand,
+  .sidebar-footer {
+    display: none;
+  }
+
+  .menu {
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+  }
+
+  .menu a,
+  .menu button {
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+    min-height: 54px;
+    padding: 0;
+    font-size: 0.73rem;
+    text-align: center;
+  }
+
+  .topbar {
+    padding: 14px 16px;
+  }
+
+  .topbar h1 {
+    font-size: 1.4rem;
+  }
+
+  .topbar-user-text {
+    display: none;
+  }
+
+  .content {
+    padding: 16px 16px 32px;
+  }
+
+  .dashboard {
+    gap: 14px;
+  }
+
+  .stat-tiles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-box {
+    flex: none;
+    max-width: none;
+  }
+
+  .table-container .table {
+    min-width: 640px;
+  }
+
+  .col-bar {
+    display: none;
+  }
+
+  .regulation-header {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .regulation-actions {
+    justify-content: flex-start;
+  }
+
+  /* Menos sangría por nivel, para que los artículos profundos sigan siendo legibles. */
+  .tree ul {
+    margin-left: 6px;
+    padding-left: 8px;
+  }
+
+  .tree-row {
+    flex-wrap: wrap;
+  }
+
+  .tree-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 420px) {
+  .field-pair {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

@@ -1,0 +1,96 @@
+import type { DocumentType, IntranetDocument, ProcessNode, Role, Session, User } from '../domain/types.ts'
+
+/*
+ * Contrato del backend. La aplicación solo conoce esta interfaz: para migrar a
+ * otro backend (una API propia, Firebase, etc.) basta con escribir otra
+ * implementación de `Backend` y registrarla en ./index.ts. Ninguna pantalla
+ * importa Supabase directamente.
+ */
+
+/** Error con un mensaje en español que se puede mostrar tal cual al usuario. */
+export class BackendError extends Error {}
+
+export type RoleInput = Pick<Role, 'name' | 'description' | 'permissions'> & { id?: string }
+/** Lo que llena el dueño al subir un documento. `replacesId`: la versión publicada que reemplaza. */
+export type DocumentInput = Pick<
+  IntranetDocument,
+  'code' | 'title' | 'typeId' | 'processId' | 'version' | 'description' | 'classification' | 'allowedRoleIds'
+> & { id?: string; replacesId?: string | null }
+export type ProcessInput = Pick<ProcessNode, 'parentId' | 'code' | 'name'> & { id?: string }
+export type DocumentTypeInput = Pick<DocumentType, 'name'> & { id?: string }
+export type NewUser = Pick<User, 'email' | 'fullName' | 'roleId'>
+export type UserPatch = Pick<User, 'fullName' | 'roleId' | 'active'>
+
+export interface AuthApi {
+  /** La sesión abierta, o null si no hay ninguna. */
+  getSession(): Promise<Session | null>
+  signIn(email: string, password: string): Promise<Session>
+  signOut(): Promise<void>
+  /** Cambia la contraseña del usuario en sesión y da por cumplido el cambio obligatorio. */
+  changePassword(current: string, next: string): Promise<void>
+}
+
+export interface UsersApi {
+  list(): Promise<User[]>
+  /** Crea el usuario con una contraseña temporal, que se devuelve para entregársela. */
+  create(input: NewUser): Promise<{ user: User; temporaryPassword: string }>
+  update(id: string, patch: UserPatch): Promise<User>
+  /** Genera una contraseña temporal nueva y obliga a cambiarla en el siguiente ingreso. */
+  resetPassword(id: string): Promise<string>
+}
+
+export interface RolesApi {
+  list(): Promise<Role[]>
+  save(input: RoleInput): Promise<Role>
+  remove(id: string): Promise<void>
+}
+
+/** Mapa de procesos de la intranet. Lo leen todos; lo cambia quien configura la intranet. */
+export interface ProcessesApi {
+  list(): Promise<ProcessNode[]>
+  /** Crea (al final de su nivel) o renombra. El padre no cambia al editar. */
+  save(input: ProcessInput): Promise<ProcessNode>
+  /** Solo si no tiene procesos debajo ni documentos. */
+  remove(id: string): Promise<void>
+  /** Sube (-1) o baja (+1) un lugar dentro de su nivel. */
+  move(id: string, direction: -1 | 1): Promise<void>
+}
+
+/** Tipos de documento de la intranet: las carpetas de cada proceso. */
+export interface DocumentTypesApi {
+  list(): Promise<DocumentType[]>
+  save(input: DocumentTypeInput): Promise<DocumentType>
+  /** Solo si ningún documento es de ese tipo. */
+  remove(id: string): Promise<void>
+  move(id: string, direction: -1 | 1): Promise<void>
+}
+
+export interface DocumentsApi {
+  /** Los documentos que el usuario puede ver: los publicados que su rol permite, los suyos y, si aprueba, los enviados. */
+  list(): Promise<IntranetDocument[]>
+  /**
+   * Crea el documento (el archivo es obligatorio) o corrige uno propio que no
+   * esté publicado (el archivo es opcional). En ambos casos queda por aprobar.
+   */
+  save(input: DocumentInput, file: File | null): Promise<IntranetDocument>
+  /** Aprueba (publica) u observa un documento enviado. Al publicar una versión nueva se retira la anterior. */
+  review(id: string, approved: boolean, note: string): Promise<IntranetDocument>
+  /** Retira de la intranet un documento publicado. */
+  archive(id: string): Promise<IntranetDocument>
+  remove(document: IntranetDocument): Promise<void>
+  /** El archivo, para el visor o para descargarlo, si el usuario tiene acceso. */
+  getFile(document: IntranetDocument): Promise<Blob>
+}
+
+export interface Backend {
+  /** Nombre de la implementación: "supabase" o "local". */
+  name: string
+  /** Aviso para la pantalla de ingreso cuando el backend es de demostración. */
+  demoNotice?: string
+  auth: AuthApi
+  users: UsersApi
+  roles: RolesApi
+  documents: DocumentsApi
+  processes: ProcessesApi
+  documentTypes: DocumentTypesApi
+}
