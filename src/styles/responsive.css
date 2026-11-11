@@ -53,8 +53,21 @@
     font-size: 2.4rem;
   }
 
-  .login-slogan {
-    font-size: 1.1rem;
+  .slogan-highlight {
+    font-size: 1rem;
+  }
+
+  .slogan-script {
+    font-size: 1.7rem;
+  }
+
+  /* El isotipo de fondo, recortado a la derecha de la franja, detrás del texto. */
+  .login-watermark {
+    top: -18%;
+    right: -14%;
+    width: 62%;
+    opacity: 0.12;
+    mask-image: linear-gradient(to bottom, black 35%, transparent 58%);
   }
 
   .login-motto {

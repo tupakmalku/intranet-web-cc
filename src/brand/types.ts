@@ -70,6 +70,17 @@ export interface Brand {
   shortName: string
   /** Eslogan de la institución. */
   slogan: string
+  /**
+   * Cómo se dibuja el eslogan en la pantalla de ingreso, imitando su pieza
+   * gráfica: una parte destacada en un recuadro y el resto en letra manuscrita
+   * (la de `typography.script`). Sin esto, se muestra el eslogan como texto.
+   */
+  sloganDisplay?: {
+    /** Lo que va en el recuadro, en mayúsculas: "La fuerza". */
+    highlight: string
+    /** Lo que va en letra manuscrita, con un trazo debajo: "De nuestras raíces". */
+    script: string
+  }
   /** Lema de la aplicación: una línea que explica para qué sirve. */
   motto: string
 
@@ -93,6 +104,8 @@ export interface Brand {
     body?: string
     /** Familia de títulos y encabezados. Por defecto, la del texto. */
     headings?: string
+    /** Familia manuscrita para el eslogan (sloganDisplay). La carga stylesheetUrl. */
+    script?: string
     /** Hoja de estilos que carga las familias (por ejemplo, de Google Fonts). */
     stylesheetUrl?: string
   }

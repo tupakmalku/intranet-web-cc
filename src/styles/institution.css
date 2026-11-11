@@ -261,8 +261,7 @@
 
 @media (max-width: 760px) {
   /* En móvil el panel de marca es corto: solo logotipo y eslogan. */
-  .institution-summary,
-  .login-watermark {
+  .institution-summary {
     display: none;
   }
 }

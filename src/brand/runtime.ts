@@ -12,7 +12,8 @@ import type { Brand, BrandColors, ProcessTone } from './types.ts'
  */
 
 /** Lo que puede traer brand.json: cualquier parte de la marca. */
-export type BrandOverride = Partial<Omit<Brand, 'colors' | 'logo' | 'typography' | 'shape' | 'birthdays' | 'session'>> & {
+export type BrandOverride = Partial<Omit<Brand, 'colors' | 'logo' | 'typography' | 'shape' | 'birthdays' | 'session' | 'sloganDisplay'>> & {
+  sloganDisplay?: Brand['sloganDisplay']
   colors?: Partial<BrandColors>
   logo?: Brand['logo']
   typography?: Brand['typography']
@@ -100,6 +101,7 @@ export function sanitizeBrandOverride(raw: unknown): BrandOverride {
     override.typography = compact({
       body: pick(raw.typography, 'body', isFontName, 'no es un nombre de familia válido'),
       headings: pick(raw.typography, 'headings', isFontName, 'no es un nombre de familia válido'),
+      script: pick(raw.typography, 'script', isFontName, 'no es un nombre de familia válido'),
       stylesheetUrl: pick(raw.typography, 'stylesheetUrl', isSafeUrl, 'debe ser una ruta "/..." o una dirección https'),
     })
   }
@@ -129,6 +131,14 @@ export function sanitizeBrandOverride(raw: unknown): BrandOverride {
     })
   }
 
+  if (isRecord(raw.sloganDisplay)) {
+    const isShortText = (v: unknown): v is string => typeof v === 'string' && v.trim().length > 0 && v.length <= 60
+    const highlight = pick(raw.sloganDisplay, 'highlight', isShortText, 'debe ser un texto de hasta 60 caracteres')
+    const script = pick(raw.sloganDisplay, 'script', isShortText, 'debe ser un texto de hasta 60 caracteres')
+    if (highlight && script) override.sloganDisplay = { highlight: highlight.trim(), script: script.trim() }
+    else warn('se ignoró "sloganDisplay": necesita "highlight" y "script".')
+  }
+
   if (isRecord(raw.session)) {
     const between = (min: number, max: number) => (v: unknown): v is number => Number.isInteger(v) && (v as number) >= min && (v as number) <= max
     override.session = compact({
@@ -138,7 +148,7 @@ export function sanitizeBrandOverride(raw: unknown): BrandOverride {
     })
   }
 
-  const known = new Set<string>([...TEXT_KEYS, 'colors', 'logo', 'typography', 'shape', 'processTones', 'birthdays', 'session', '$schema', '_comment'])
+  const known = new Set<string>([...TEXT_KEYS, 'colors', 'logo', 'typography', 'shape', 'processTones', 'birthdays', 'session', 'sloganDisplay', '$schema', '_comment'])
   for (const key of Object.keys(raw)) if (!known.has(key)) warn(`clave desconocida "${key}".`)
   return override
 }

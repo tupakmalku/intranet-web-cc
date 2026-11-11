@@ -162,7 +162,8 @@ Hay dos formas de definir la marca, y se pueden combinar:
 | `colors.background`, `surface`, `border`, `borderField` | Fondo de la aplicación, de tarjetas y campos, y bordes. |
 | `colors.series1`, `series2` | Colores de los gráficos. |
 | `colors.danger`, `warning`, `success` (y sus `Soft`, `warningStrong`) | Colores de estado. Conviene no cambiarlos: rojo, ámbar y verde significan lo mismo en cualquier institución. |
-| `typography.body`, `headings`, `stylesheetUrl` | Familia del texto, de los títulos y la hoja que las carga (por ejemplo, Google Fonts). |
+| `typography.body`, `headings`, `script`, `stylesheetUrl` | Familia del texto, de los títulos, la manuscrita del eslogan y la hoja que las carga (por ejemplo, Google Fonts). |
+| `sloganDisplay.highlight`, `sloganDisplay.script` | El eslogan como su pieza gráfica en la pantalla de ingreso: `highlight` en un recuadro y `script` en letra manuscrita con un trazo debajo. Sin esto, el eslogan se muestra como texto. |
 | `shape.radius`, `shape.fieldRadius` | Radio de las esquinas de tarjetas y de campos y botones, en píxeles. |
 | `session.idleMinutes`, `session.maxHours`, `session.warningSeconds` | Caducidad de la sesión. Ver *Caducidad de la sesión*. |
 | `birthdays.enabled`, `birthdays.celebration`, `birthdays.soonDays` | Si la institución usa los cumpleaños, si la celebración se abre sola y con cuántos días de anticipación avisa. Ver *Fotos y cumpleaños*. |

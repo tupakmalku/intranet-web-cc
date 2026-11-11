@@ -6,6 +6,7 @@ import Field from '../components/ui/Field.tsx'
 import Icon from '../components/ui/Icon.tsx'
 import PasswordField from '../components/ui/PasswordField.tsx'
 import InstitutionSummary from '../components/institution/InstitutionSummary.tsx'
+import SloganMark from '../components/SloganMark.tsx'
 import { useAuth } from '../context/auth.ts'
 import { hasInstitutionContent } from '../domain/institution.ts'
 import { greeting } from '../lib/dates.ts'
@@ -19,9 +20,6 @@ export default function IngresoPage() {
   // Identidad institucional (pública): misión, visión, valores y política de calidad, bajo el eslogan.
   const institution = useQuery(() => backend.institution.get(), [])
   const showInstitution = !!institution.data && hasInstitutionContent(institution.data) && institution.data.loginHighlight !== 'none'
-  const words = brand.slogan.trim().split(/\s+/)
-  const sloganEnd = words.pop() ?? ''
-  const sloganStart = words.join(' ')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -45,12 +43,10 @@ export default function IngresoPage() {
         <header className="login-hero">
           <h1 className="login-app-name">{brand.appName}</h1>
           <span className="login-eyebrow">{brand.institution}</span>
-          <p className="login-slogan">
-            {/* La última palabra del eslogan, en el color de acento. */}
-            {sloganStart} <span>{sloganEnd}</span>
-          </p>
         </header>
         {showInstitution ? <InstitutionSummary profile={institution.data!} /> : <p className="login-motto">{brand.motto}</p>}
+        {/* El eslogan cierra el panel, después de los valores. */}
+        <SloganMark className="login-slogan" />
       </aside>
       <main className="login-panel">
         <form className="form login-form" onSubmit={handleSubmit} noValidate>

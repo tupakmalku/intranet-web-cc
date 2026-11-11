@@ -100,6 +100,7 @@ export function applyBrand(b: Brand = brand): void {
   }
   if (b.typography?.body) style.setProperty('--brand-font', fontFamily(b.typography.body))
   if (b.typography?.headings) style.setProperty('--brand-font-headings', fontFamily(b.typography.headings))
+  if (b.typography?.script) style.setProperty('--brand-font-script', fontFamily(b.typography.script))
   if (b.shape?.radius !== undefined) style.setProperty('--brand-radius', `${b.shape.radius}px`)
   if (b.shape?.fieldRadius !== undefined) style.setProperty('--brand-radius-field', `${b.shape.fieldRadius}px`)
 

@@ -21,6 +21,8 @@ const ambato: Brand = {
   institution: 'Cooperativa de Ahorro y Crédito Ambato',
   shortName: 'Cooperativa Ambato',
   slogan: 'La fuerza de nuestras raíces',
+  // Como en su pieza gráfica: «LA FUERZA» en un recuadro y «De nuestras raíces» en letra manuscrita.
+  sloganDisplay: { highlight: 'La fuerza', script: 'De nuestras raíces' },
   motto: 'Manuales, procedimientos y políticas de la institución en un solo lugar.',
   logo: { onLight: '/brands/ambato.png', onDark: '/brands/ambato-negativo.png' },
   colors: {
@@ -33,7 +35,9 @@ const ambato: Brand = {
   typography: {
     body: 'Kanit',
     headings: 'Kanit',
-    stylesheetUrl: 'https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap',
+    // La manuscrita más parecida a la del eslogan publicado; se reemplaza si la institución entrega la suya.
+    script: 'Kaushan Script',
+    stylesheetUrl: 'https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,300;0,400;0,500;0,600;0,700;1,800&family=Kaushan+Script&display=swap',
   },
 }
 
