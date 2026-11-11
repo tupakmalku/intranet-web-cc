@@ -24,6 +24,7 @@ export const AUDIT_ACTIONS: Record<AuditAction, { name: string; group: AuditGrou
   'document.viewed': { name: 'Abrió en el visor', group: 'reads' },
   'document.downloaded': { name: 'Descargó', group: 'reads' },
   'catalog.changed': { name: 'Cambió el mapa de procesos o los tipos', group: 'settings' },
+  'institution.changed': { name: 'Cambió la identidad institucional', group: 'settings' },
   'settings.changed': { name: 'Cambió la configuración de seguridad', group: 'settings' },
 }
 

@@ -7,6 +7,7 @@ import {
   isDocumentOwner,
 } from '../../domain/documents.ts'
 import { AUDIT_ACTIONS, MFA_POLICIES, mfaRequired } from '../../domain/audit.ts'
+import { cleanInstitution, EMPTY_INSTITUTION } from '../../domain/institution.ts'
 import { canGrantRole, canManageUser, hasAllPermissions } from '../../domain/permissions.ts'
 import { levelOf, MAX_PROCESS_LEVEL, withSubprocesses } from '../../domain/processes.ts'
 import type { AuditAction, IntranetDocument, Permission, Session, User } from '../../domain/types.ts'
@@ -667,6 +668,22 @@ export function createLocalBackend(): Backend {
         if (previous !== settings.mfaPolicy) audit(db, session, 'settings.changed', 'Verificación en dos pasos', `${MFA_POLICIES[previous].short} → ${MFA_POLICIES[settings.mfaPolicy].short}`)
         write(db)
         return db.settings
+      },
+    },
+
+    institution: {
+      // Información pública: se lee sin sesión, para la pantalla de ingreso.
+      async get() {
+        return read().institution ?? EMPTY_INSTITUTION
+      },
+
+      async save(profile) {
+        const db = read()
+        const session = requireSession(db, 'intranet.configure')
+        db.institution = cleanInstitution(profile)
+        audit(db, session, 'institution.changed', 'Misión, visión, valores y política de calidad')
+        write(db)
+        return db.institution
       },
     },
 

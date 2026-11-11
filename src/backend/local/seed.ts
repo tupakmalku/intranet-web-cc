@@ -1,4 +1,4 @@
-import type { AuditEntry, DocumentType, IntranetDocument, Permission, ProcessNode, Role, SecuritySettings, User } from '../../domain/types.ts'
+import type { AuditEntry, DocumentType, InstitutionProfile, IntranetDocument, Permission, ProcessNode, Role, SecuritySettings, User } from '../../domain/types.ts'
 import { ALL_PERMISSIONS } from '../../domain/labels.ts'
 import { seedDocuments, seedDocumentTypes, seedProcesses } from './intranetSeed.ts'
 
@@ -27,6 +27,8 @@ export interface Db {
   settings?: SecuritySettings
   /** Registro de auditoría, del más antiguo al más reciente. */
   audit?: AuditEntry[]
+  /** Misión, visión, valores y política de calidad. */
+  institution?: InstitutionProfile
 }
 
 /** Contraseña temporal de todos los usuarios de ejemplo. */
@@ -127,6 +129,18 @@ function birthdayIn(days: number): string {
   return `${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
 }
 
+/** Identidad institucional de ejemplo: la publicada por la Cooperativa Ambato. */
+const DEMO_INSTITUTION: InstitutionProfile = {
+  mission:
+    'Somos una Cooperativa que desarrolla intermediación de recursos financieros con una amplia red de canales, utilizando tecnología de vanguardia a favor de nuestros socios y clientes, fomentando la Economía Popular y Solidaria.',
+  vision: 'Cooperativa Ambato al 2028 tiene una calificación de Riesgo AA, con productos digitales innovadores y cobertura a nivel nacional.',
+  values: ['Honestidad', 'Responsabilidad Social', 'Trabajo en Equipo', 'Lealtad', 'Ayuda Mutua', 'Compromiso con los demás', 'Transparencia', 'Participación'],
+  qualityPolicy:
+    'Proporcionar a nuestros socios, productos y servicios financieros de calidad, cumpliendo las normas legales y requisitos del cliente, con un compromiso de mejora continua.',
+  qualityDocumentCode: null,
+  loginHighlight: 'all',
+}
+
 const MANAGER = 'user-manager'
 const APPROVER = 'user-publications'
 
@@ -155,5 +169,6 @@ export function createSeed(): Db {
     // Se cambia en Seguridad > Políticas. En Supabase, por defecto es obligatoria para quien gestiona usuarios o roles.
     settings: { mfaPolicy: 'off' },
     audit: [],
+    institution: DEMO_INSTITUTION,
   }
 }

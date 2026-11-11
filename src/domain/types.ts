@@ -64,6 +64,25 @@ export interface MfaState {
   verified: boolean
 }
 
+/**
+ * Identidad institucional: misión, visión, valores y política de calidad. Es
+ * información pública (se muestra también en la pantalla de ingreso). Vacía, la
+ * sección no aparece.
+ */
+export interface InstitutionProfile {
+  mission: string
+  vision: string
+  values: string[]
+  qualityPolicy: string
+  /**
+   * Código del documento oficial de la política de calidad en la intranet (por
+   * ejemplo, el manual de calidad). Se enlaza la versión publicada vigente.
+   */
+  qualityDocumentCode: string | null
+  /** Qué se muestra en la pantalla de ingreso: todo (misión, visión, valores y política), una parte o nada. */
+  loginHighlight: 'all' | 'mission' | 'values' | 'none'
+}
+
 /** Configuración de seguridad que se guarda en el servidor (la hace cumplir la base de datos). */
 export interface SecuritySettings {
   mfaPolicy: MfaPolicy
@@ -106,6 +125,7 @@ export type AuditAction =
   | 'document.viewed'
   | 'document.downloaded'
   | 'catalog.changed'
+  | 'institution.changed'
   | 'settings.changed'
 
 // ---------- Intranet: documentos institucionales ----------

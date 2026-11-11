@@ -17,6 +17,7 @@ import CambioClaveForm from '../forms/CambioClaveForm.tsx'
 import PerfilForm from '../forms/PerfilForm.tsx'
 import { upcomingBirthdays } from '../lib/birthdays.ts'
 import { toIsoDate } from '../lib/dates.ts'
+import { hasInstitutionContent } from '../domain/institution.ts'
 import Button from '../components/ui/Button.tsx'
 import { useQuery } from '../lib/useQuery.ts'
 import { VIEW_PATHS } from './intranetViews.ts'
@@ -33,6 +34,8 @@ interface Section {
   count?: keyof DocumentCounts
   /** Pertenece a la intranet: ahí el buscador va en la cabecera y se puede publicar conservando la carpeta abierta. */
   intranet?: boolean
+  /** Identidad institucional: se oculta si no tiene contenido (salvo para quien la edita). */
+  institution?: boolean
 }
 
 interface DocumentCounts {
@@ -43,6 +46,7 @@ interface DocumentCounts {
 /** Secciones del menú. Las de la intranet son sus vistas (src/pages/intranetViews.ts); App.tsx crea las rutas según los mismos permisos. */
 const SECTIONS: Section[] = [
   { path: VIEW_PATHS.mapa, title: 'Intranet', menu: 'Intranet', icon: 'folder', intranet: true },
+  { path: '/institucion', title: 'Nuestra institución', menu: 'Nuestra institución', icon: 'building', institution: true },
   { path: VIEW_PATHS.mios, title: 'Mis documentos', menu: 'Mis documentos', icon: 'file', permission: 'documents.publish', count: 'mine', intranet: true },
   { path: VIEW_PATHS.aprobar, title: 'Por aprobar', menu: 'Por aprobar', icon: 'tasks', permission: 'documents.approve', count: 'toReview', intranet: true },
   { path: VIEW_PATHS.config, title: 'Configuración', menu: 'Configuración', icon: 'layers', permission: 'intranet.configure', intranet: true },
@@ -125,7 +129,10 @@ export default function AppLayout() {
     navigate('/', { replace: true })
   }
 
-  const sections = SECTIONS.filter((s) => !s.permission || [s.permission].flat().some((p) => can(p)))
+  // La sección de la institución aparece si tiene contenido, o para quien puede escribirlo.
+  const institution = useQuery(() => backend.institution.get(), [])
+  const showInstitution = can('intranet.configure') || (!!institution.data && hasInstitutionContent(institution.data))
+  const sections = SECTIONS.filter((s) => (!s.permission || [s.permission].flat().some((p) => can(p))) && (!s.institution || showInstitution))
   // La sección activa es la de ruta más larga que coincide: "/seguridad/roles" pertenece a "/seguridad".
   const current = [...SECTIONS].reverse().find((s) => pathname === s.path || pathname.startsWith(`${s.path}/`)) ?? SECTIONS[0]
 

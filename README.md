@@ -105,6 +105,15 @@ Word se acepta solo en .docx: el formato .doc antiguo no se puede mostrar en el 
 
 - Esto se aplica en el navegador. Para que lo haga cumplir también el servidor (aunque alguien copie la sesión del navegador), configura lo mismo en Supabase: ver *Configurar Supabase*.
 
+### Nuestra institución
+
+- Sección del menú con la **misión, visión, valores y política de calidad**, con el estilo de la pieza gráfica de la institución (título, línea e ícono en recuadro).
+- La edita quien tiene *Configurar la intranet* (botón **Editar** en la sección), sin tocar el código. Queda en la auditoría.
+- La política de calidad puede enlazar su **documento oficial** de la intranet (por código): siempre se abre la versión publicada vigente.
+- En la **pantalla de ingreso**, bajo el eslogan, se muestra por defecto **todo** (misión, visión, valores y política de calidad) en bloques compactos; al editar se puede elegir solo la misión, solo los valores o nada. Es información pública: se lee sin sesión. En móvil se muestra solo el logotipo y el eslogan.
+- Si no tiene contenido, la sección no aparece en el menú (salvo para quien puede escribirlo).
+- En Supabase: tabla `institution_profile` (`supabase/migrations/20261201000500_institution.sql`). Empieza vacía; se llena desde la intranet.
+
 ### Fotos y cumpleaños
 
 - Cada usuario puede tener **foto de perfil** y **cumpleaños** (solo día y mes, sin año, para no exponer la edad).

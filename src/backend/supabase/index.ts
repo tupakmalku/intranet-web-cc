@@ -1,6 +1,7 @@
 import { createClient, FunctionsHttpError, type SupabaseClient } from '@supabase/supabase-js'
 import { AUDIT_ACTIONS, mfaRequired } from '../../domain/audit.ts'
-import type { AuditAction, AuditEntry, DocumentType, IntranetDocument, MfaPolicy, ProcessNode, Role, Session, User } from '../../domain/types.ts'
+import { cleanInstitution, EMPTY_INSTITUTION } from '../../domain/institution.ts'
+import type { AuditAction, AuditEntry, DocumentType, InstitutionProfile, IntranetDocument, MfaPolicy, ProcessNode, Role, Session, User } from '../../domain/types.ts'
 import { DOCUMENT_FILES, safeFileName } from '../../lib/files.ts'
 import { BackendError, type Backend } from '../types.ts'
 import { newId } from '../../lib/ids.ts'
@@ -40,6 +41,18 @@ const toUser = (row: any): User => ({
 })
 
 const AVATARS_BUCKET = 'avatars'
+
+const toInstitution = (row: any): InstitutionProfile =>
+  row
+    ? {
+        mission: row.mission,
+        vision: row.vision,
+        values: row.values ?? [],
+        qualityPolicy: row.quality_policy,
+        qualityDocumentCode: row.quality_document_code,
+        loginHighlight: row.login_highlight,
+      }
+    : EMPTY_INSTITUTION
 
 const toAuditEntry = (row: any): AuditEntry => ({
   id: String(row.id),
@@ -438,6 +451,36 @@ export function createSupabaseBackend(): Backend {
           'No se pudo guardar la configuración de seguridad.',
         )
         return { mfaPolicy: row.mfa_policy as MfaPolicy }
+      },
+    },
+
+    institution: {
+      // Información pública: la política de la tabla deja leerla sin sesión, para la pantalla de ingreso.
+      async get() {
+        const { data, error } = await supabase.from('institution_profile').select('*').maybeSingle()
+        if (error) console.error(error)
+        return toInstitution(data)
+      },
+
+      async save(profile) {
+        const p = cleanInstitution(profile)
+        const row = unwrap(
+          await supabase
+            .from('institution_profile')
+            .update({
+              mission: p.mission,
+              vision: p.vision,
+              values: p.values,
+              quality_policy: p.qualityPolicy,
+              quality_document_code: p.qualityDocumentCode,
+              login_highlight: p.loginHighlight,
+            })
+            .eq('id', true)
+            .select()
+            .single(),
+          'No se pudo guardar la identidad institucional.',
+        )
+        return toInstitution(row)
       },
     },
 

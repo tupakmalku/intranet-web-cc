@@ -1,0 +1,192 @@
+/* Identidad institucional: misión, visión, valores y política de calidad. */
+
+.institution-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.institution-block {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  padding: 14px 22px 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background:
+    radial-gradient(circle at 100% 0%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 55%),
+    var(--surface);
+}
+
+.institution-toolbar {
+  margin-bottom: 10px;
+}
+
+.institution-block.is-wide {
+  grid-column: 1 / -1;
+}
+
+/* Título, línea hasta el ícono y el ícono en recuadro, como en la pieza gráfica de la institución. */
+.institution-block header {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.institution-block h2 {
+  color: var(--accent-strong);
+  font-family: var(--font-headings);
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.institution-rule {
+  flex: 1;
+  height: 2px;
+  margin-bottom: 3px;
+  border-radius: 2px;
+  background: var(--accent);
+}
+
+.institution-tile {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: var(--accent);
+  color: var(--on-primary);
+}
+
+.institution-body {
+  display: grid;
+  justify-items: start;
+  gap: 14px;
+}
+
+.institution-body p {
+  color: var(--primary-dark);
+  font-size: 1.04rem;
+  line-height: 1.55;
+}
+
+.value-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.value-chips li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 13px;
+  border-radius: 999px;
+  font-weight: 500;
+}
+
+.value-chips-light li {
+  background: var(--accent-050);
+  color: var(--primary-dark);
+}
+
+.value-chips-light svg {
+  color: var(--accent-strong);
+}
+
+.value-chips-dark li {
+  padding: 4px 10px;
+  background: color-mix(in srgb, var(--on-primary) 14%, transparent);
+  color: var(--on-primary);
+  font-size: 0.85rem;
+}
+
+/* Pantalla de ingreso: los bloques compactos sobre el color principal. */
+.login-brand-full {
+  align-content: center;
+  gap: 10px;
+  padding: 24px 40px;
+  overflow-y: auto;
+}
+
+.login-brand-full > p {
+  font-size: 1.05rem;
+}
+
+.institution-summary {
+  display: grid;
+  gap: 10px;
+  width: min(100%, 520px);
+  margin-top: 6px;
+  text-align: left;
+}
+
+.institution-block-login {
+  gap: 6px;
+  padding: 10px 14px 12px;
+  border: 0;
+  border-left: 3px solid var(--accent);
+  border-radius: 0 var(--radius-field) var(--radius-field) 0;
+  background: color-mix(in srgb, var(--on-primary) 8%, transparent);
+}
+
+.institution-block-login h2 {
+  color: var(--on-primary);
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+}
+
+.institution-block-login .institution-rule {
+  height: 1px;
+  margin-bottom: 4px;
+  opacity: 0.6;
+}
+
+.institution-block-login .institution-tile {
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+}
+
+.institution-block-login .institution-body p {
+  /* Sin el ancho máximo de los párrafos del panel de marca (.login-brand p). */
+  max-width: none;
+  color: var(--on-primary);
+  font-size: 0.85rem;
+  font-weight: 300;
+  line-height: 1.45;
+}
+
+.institution-block-login .value-chips {
+  gap: 6px;
+}
+
+.institution-block-login .value-chips li {
+  padding: 2px 9px;
+  font-size: 0.78rem;
+}
+
+@media (max-width: 900px) {
+  .institution-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 760px) {
+  /* En móvil el panel de marca es corto: solo logotipo y eslogan. */
+  .institution-summary {
+    display: none;
+  }
+
+  .login-brand-full {
+    align-content: center;
+    padding: 28px 24px;
+  }
+}

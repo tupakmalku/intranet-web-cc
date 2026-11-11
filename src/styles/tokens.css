@@ -45,7 +45,8 @@
   /* Forma. */
   --radius: var(--brand-radius, 14px);
   --radius-field: var(--brand-radius-field, 12px);
-  --sidebar-width: 232px;
+  /* Ancho para que «Nuestra institución» y «Mis documentos» (con su contador) quepan en una línea. */
+  --sidebar-width: 252px;
   --shadow-floating: 0 18px 48px color-mix(in srgb, var(--ink) 22%, transparent);
 
   font-family: var(--font);

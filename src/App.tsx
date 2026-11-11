@@ -5,6 +5,7 @@ import ToastProvider from './context/ToastProvider.tsx'
 import { useAuth } from './context/auth.ts'
 import AppLayout from './pages/AppLayout.tsx'
 import IngresoPage from './pages/IngresoPage.tsx'
+import InstitucionPage from './pages/InstitucionPage.tsx'
 import IntranetPage from './pages/IntranetPage.tsx'
 import PrimerIngresoPage from './pages/PrimerIngresoPage.tsx'
 import VerificacionPage from './pages/VerificacionPage.tsx'
@@ -57,6 +58,7 @@ function Screens() {
         <Route element={<AppLayout />}>
           <Route index element={<IntranetPage view="mapa" />} />
           <Route path="intranet" element={<LegacyIntranetRedirect />} />
+          <Route path="institucion" element={<InstitucionPage />} />
           {can('documents.publish') && <Route path={VIEW_PATHS.mios.slice(1)} element={<IntranetPage view="mios" />} />}
           {can('documents.approve') && <Route path={VIEW_PATHS.aprobar.slice(1)} element={<IntranetPage view="aprobar" />} />}
           {can('intranet.configure') && <Route path={VIEW_PATHS.config.slice(1)} element={<IntranetPage view="config" />} />}

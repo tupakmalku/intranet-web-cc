@@ -1,5 +1,5 @@
 import type { AuditGroup } from '../domain/audit.ts'
-import type { AuditEntry, DocumentType, IntranetDocument, ProcessNode, Role, SecuritySettings, Session, User } from '../domain/types.ts'
+import type { AuditEntry, DocumentType, InstitutionProfile, IntranetDocument, ProcessNode, Role, SecuritySettings, Session, User } from '../domain/types.ts'
 
 /*
  * Contrato del backend. La aplicación solo conoce esta interfaz: para migrar a
@@ -88,6 +88,12 @@ export interface SecurityApi {
   saveSettings(settings: SecuritySettings): Promise<SecuritySettings>
 }
 
+/** Identidad institucional. Se lee sin sesión (pantalla de ingreso); la cambia quien configura la intranet. */
+export interface InstitutionApi {
+  get(): Promise<InstitutionProfile>
+  save(profile: InstitutionProfile): Promise<InstitutionProfile>
+}
+
 /** Registro de auditoría: solo se agrega y se consulta (con el permiso audit.view). */
 export interface AuditApi {
   list(filter: AuditFilter): Promise<AuditEntry[]>
@@ -149,4 +155,5 @@ export interface Backend {
   documentTypes: DocumentTypesApi
   security: SecurityApi
   audit: AuditApi
+  institution: InstitutionApi
 }
