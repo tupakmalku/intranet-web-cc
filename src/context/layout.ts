@@ -6,6 +6,8 @@ export interface LayoutContext {
   topbarSlot: HTMLElement | null
   /** Vuelve a contar los documentos del menú (Mis documentos, Por aprobar) tras un cambio. */
   refreshCounts: () => void
+  /** Vuelve a leer los compañeros (cumpleaños y fotos) tras editar usuarios. */
+  refreshBirthdays: () => void
 }
 
 export const useLayout = () => useOutletContext<LayoutContext>()

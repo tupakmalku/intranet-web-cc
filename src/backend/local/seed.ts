@@ -53,7 +53,65 @@ const DEMO_USERS: [id: string, email: string, fullName: string, roleId: string][
   ['user-manager', 'jefatura@demo.ec', 'Javier Jefatura', 'role-manager'],
   ['user-publications', 'aprobador@demo.ec', 'Paula Publicaciones', 'role-publications'],
   ['user-staff', 'colaborador@demo.ec', 'Carlos Colaborador', 'role-staff'],
+  // Compañeros ficticios (rol Colaborador) para que la intranet y los cumpleaños se vean con datos.
+  ['user-colleague-1', 'maria.guaman@demo.ec', 'María Guamán', 'role-staff'],
+  ['user-colleague-2', 'diego.lascano@demo.ec', 'Diego Lascano', 'role-staff'],
+  ['user-colleague-3', 'gabriela.naranjo@demo.ec', 'Gabriela Naranjo', 'role-staff'],
+  ['user-colleague-4', 'luis.mora@demo.ec', 'Luis Mora', 'role-staff'],
+  ['user-colleague-5', 'veronica.pazmino@demo.ec', 'Verónica Pazmiño', 'role-staff'],
+  ['user-colleague-6', 'santiago.chicaiza@demo.ec', 'Santiago Chicaiza', 'role-staff'],
+  ['user-colleague-7', 'daniela.villacis@demo.ec', 'Daniela Villacís', 'role-staff'],
+  ['user-colleague-8', 'jorge.toapanta@demo.ec', 'Jorge Toapanta', 'role-staff'],
+  ['user-colleague-9', 'patricia.sanchez@demo.ec', 'Patricia Sánchez', 'role-staff'],
 ]
+
+/**
+ * Cumpleaños de ejemplo, en días contados desde que se crean los datos, para
+ * que la celebración y la tarjeta de cumpleaños tengan qué mostrar.
+ */
+const DEMO_BIRTHDAY_OFFSETS: Record<string, number> = {
+  // Hoy: tres personas.
+  'user-staff': 0,
+  'user-colleague-1': 0,
+  'user-colleague-2': 0,
+  // Próximos días y semanas.
+  'user-colleague-3': 1,
+  'user-manager': 3,
+  'user-colleague-4': 6,
+  'user-colleague-5': 9,
+  'user-publications': 12,
+  'user-colleague-6': 18,
+  'user-colleague-7': 25,
+  // Fuera de los 30 días: no aparecen en la lista.
+  'user-security': 40,
+  'user-colleague-8': 75,
+  // Sin cumpleaños, para probar el registro: Andrea Admin y Patricia Sánchez.
+}
+
+/**
+ * Peinado del retrato ilustrado de cada usuario (0 corto, 1 largo, 2 recogido).
+ * Quien no está no tiene foto, para ver cómo queda con sus iniciales.
+ */
+const DEMO_PHOTO_STYLE: Record<string, number> = {
+  'user-security': 0,
+  'user-manager': 0,
+  'user-publications': 1,
+  'user-staff': 0,
+  'user-colleague-1': 2,
+  'user-colleague-3': 1,
+  'user-colleague-4': 0,
+  'user-colleague-5': 1,
+  'user-colleague-6': 0,
+  'user-colleague-7': 2,
+  'user-colleague-8': 0,
+  'user-colleague-9': 1,
+}
+
+function birthdayIn(days: number): string {
+  const date = new Date()
+  date.setDate(date.getDate() + days)
+  return `${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+}
 
 const MANAGER = 'user-manager'
 const APPROVER = 'user-publications'
@@ -62,13 +120,16 @@ const APPROVER = 'user-publications'
 export function createSeed(): Db {
   return {
     roles: DEFAULT_ROLES.map((role) => ({ ...role, system: true })),
-    users: DEMO_USERS.map(([id, email, fullName, roleId]) => ({
+    users: DEMO_USERS.map(([id, email, fullName, roleId], index) => ({
       id,
       email,
       fullName,
       roleId,
       active: true,
       mustChangePassword: true,
+      birthday: id in DEMO_BIRTHDAY_OFFSETS ? birthdayIn(DEMO_BIRTHDAY_OFFSETS[id]) : null,
+      // "demo:<n>:<peinado>": retrato ilustrado (src/backend/local/demoPhotos.ts).
+      photo: id in DEMO_PHOTO_STYLE ? `demo:${index}:${DEMO_PHOTO_STYLE[id]}` : null,
       password: DEMO_PASSWORD,
     })),
     processes: seedProcesses(),

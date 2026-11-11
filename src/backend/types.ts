@@ -18,8 +18,8 @@ export type DocumentInput = Pick<
 > & { id?: string; replacesId?: string | null }
 export type ProcessInput = Pick<ProcessNode, 'parentId' | 'code' | 'name'> & { id?: string }
 export type DocumentTypeInput = Pick<DocumentType, 'name'> & { id?: string }
-export type NewUser = Pick<User, 'email' | 'fullName' | 'roleId'>
-export type UserPatch = Pick<User, 'fullName' | 'roleId' | 'active'>
+export type NewUser = Pick<User, 'email' | 'fullName' | 'roleId' | 'birthday'>
+export type UserPatch = Pick<User, 'fullName' | 'roleId' | 'active' | 'birthday'>
 
 export interface AuthApi {
   /** La sesión abierta, o null si no hay ninguna. */
@@ -28,6 +28,8 @@ export interface AuthApi {
   signOut(): Promise<void>
   /** Cambia la contraseña del usuario en sesión y da por cumplido el cambio obligatorio. */
   changePassword(current: string, next: string): Promise<void>
+  /** Registra o corrige el cumpleaños del usuario en sesión (MM-DD, o null para quitarlo). */
+  setMyBirthday(birthday: string | null): Promise<void>
 }
 
 export interface UsersApi {
@@ -37,6 +39,14 @@ export interface UsersApi {
   update(id: string, patch: UserPatch): Promise<User>
   /** Genera una contraseña temporal nueva y obliga a cambiarla en el siguiente ingreso. */
   resetPassword(id: string): Promise<string>
+  /**
+   * Pone o quita (null) la foto de perfil. Puede hacerlo quien gestiona
+   * usuarios, con cualquiera, y cada usuario con la suya. La imagen llega ya
+   * recortada y comprimida (src/lib/images.ts).
+   */
+  setPhoto(id: string, photo: Blob | null): Promise<User>
+  /** Dirección para mostrar la foto en un <img>, o null si no tiene. */
+  photoUrl(user: Pick<User, 'id' | 'photo'>): Promise<string | null>
 }
 
 export interface RolesApi {

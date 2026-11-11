@@ -230,7 +230,7 @@
   flex: none;
 }
 
-/* Pantallas bajas: logotipo más chico y sin el eslogan, para que el menú quepa sin desplazarse. */
+/* Pantallas bajas: logotipo más chico, para que el menú quepa sin desplazarse (la tarjeta de cumpleaños se compacta en birthdays.css). */
 @media (max-height: 760px) {
   .sidebar {
     gap: 16px;
@@ -246,9 +246,6 @@
     min-height: 42px;
   }
 
-  .sidebar-footer {
-    display: none;
-  }
 }
 
 .sidebar-footer {
@@ -257,6 +254,7 @@
   margin-top: auto;
 }
 
+/* Eslogan al pie del menú, cuando la institución no usa los cumpleaños. */
 .sidebar-slogan {
   padding: 16px;
   border-radius: var(--radius);
@@ -330,17 +328,6 @@
 .topbar-user-text small {
   color: var(--ink-2);
   font-size: 0.8rem;
-}
-
-.avatar {
-  display: grid;
-  place-items: center;
-  width: 42px;
-  height: 42px;
-  border-radius: 12px;
-  background: var(--accent-050);
-  color: var(--primary);
-  font-weight: 600;
 }
 
 .content {

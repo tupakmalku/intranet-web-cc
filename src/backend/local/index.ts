@@ -9,7 +9,9 @@ import {
 import { levelOf, MAX_PROCESS_LEVEL, withSubprocesses } from '../../domain/processes.ts'
 import type { IntranetDocument, Permission, Session, User } from '../../domain/types.ts'
 import { DOCUMENT_FILES } from '../../lib/files.ts'
+import { isBirthday } from '../../lib/birthdays.ts'
 import { generateTemporaryPassword } from '../../lib/validation.ts'
+import { demoPhoto } from './demoPhotos.ts'
 import { BackendError, type Backend } from '../types.ts'
 import { deleteFile, getFile, putFile } from './files.ts'
 import { sampleFile } from './sampleFiles.ts'
@@ -39,10 +41,21 @@ function write(db: Db): void {
 
 /** Quita la contraseña antes de entregar un usuario a la aplicación. */
 function toUser(stored: StoredUser): User {
-  const user: User & { password?: string } = { ...stored }
+  // Los datos guardados antes de existir el cumpleaños y la foto no los traen.
+  const user: User & { password?: string } = { ...stored, birthday: stored.birthday ?? null, photo: stored.photo ?? null }
   delete user.password
   return user
 }
+
+/** Valida un cumpleaños (MM-DD) antes de guardarlo. Vacío o null lo quita. */
+function checkBirthday(value: string | null): string | null {
+  if (!value) return null
+  if (!isBirthday(value)) throw new BackendError('El cumpleaños no es una fecha válida.')
+  return value
+}
+
+/** Direcciones ya creadas para las fotos guardadas en IndexedDB, para no crear una por cada vez que se muestran. */
+const photoUrls = new Map<string, string>()
 
 function sessionOf(db: Db): Session | null {
   const user = db.users.find((u) => u.id === db.sessionUserId && u.active)
@@ -114,6 +127,13 @@ export function createLocalBackend(): Backend {
         user.mustChangePassword = false
         write(db)
       },
+
+      async setMyBirthday(birthday) {
+        const db = read()
+        const session = requireSession(db)
+        db.users.find((u) => u.id === session.user.id)!.birthday = checkBirthday(birthday)
+        write(db)
+      },
     },
 
     users: {
@@ -135,6 +155,8 @@ export function createLocalBackend(): Backend {
           roleId: input.roleId,
           active: true,
           mustChangePassword: true,
+          birthday: checkBirthday(input.birthday),
+          photo: null,
           password: temporaryPassword,
         }
         db.users.push(user)
@@ -151,7 +173,7 @@ export function createLocalBackend(): Backend {
         if (id === session.user.id && (patch.roleId !== user.roleId || !patch.active)) {
           throw new BackendError('No puedes cambiar tu propio rol ni inhabilitarte.')
         }
-        Object.assign(user, { fullName: patch.fullName.trim(), roleId: patch.roleId, active: patch.active })
+        Object.assign(user, { fullName: patch.fullName.trim(), roleId: patch.roleId, active: patch.active, birthday: checkBirthday(patch.birthday) })
         write(db)
         return toUser(user)
       },
@@ -165,6 +187,43 @@ export function createLocalBackend(): Backend {
         user.mustChangePassword = true
         write(db)
         return user.password
+      },
+
+      async setPhoto(id, photo) {
+        const db = read()
+        const session = requireSession(db)
+        if (id !== session.user.id && !session.role.permissions.includes('users.manage')) {
+          throw new BackendError('Tu rol no permite cambiar la foto de otro usuario.')
+        }
+        const user = db.users.find((u) => u.id === id)
+        if (!user) throw new BackendError('El usuario ya no existe.')
+        const previous = user.photo
+        let key: string | null = null
+        if (photo) {
+          // Clave nueva en cada cambio: así nadie ve la foto anterior guardada.
+          key = `photo:${id}:${newId()}`
+          await putFile(key, photo)
+        }
+        user.photo = key
+        write(db)
+        if (previous?.startsWith('photo:')) await deleteFile(previous)
+        return toUser(user)
+      },
+
+      async photoUrl(user) {
+        if (!user.photo) return null
+        // Retratos ilustrados de los usuarios de demostración.
+        if (user.photo.startsWith('demo:')) {
+          const [, n, style] = user.photo.split(':')
+          return demoPhoto(Number(n), Number(style ?? 0))
+        }
+        const cached = photoUrls.get(user.photo)
+        if (cached) return cached
+        const blob = await getFile(user.photo)
+        if (!blob) return null
+        const url = URL.createObjectURL(blob)
+        photoUrls.set(user.photo, url)
+        return url
       },
     },
 

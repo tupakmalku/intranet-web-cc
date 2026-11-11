@@ -49,6 +49,12 @@
     "fieldRadius": 8
   },
 
+  "birthdays": {
+    "enabled": true,
+    "celebration": true,
+    "soonDays": 3
+  },
+
   "processTones": [
     { "band": "#fbe7a6", "text": "#1b2a22", "accent": "#9a7400" },
     { "band": "#0b6b3a", "text": "#ffffff" },

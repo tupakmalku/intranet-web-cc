@@ -38,6 +38,8 @@ const demo: Brand = {
   //   { band: '#1f4e79', text: '#ffffff' },
   //   { band: '#e6eef6', text: '#14263b', accent: '#1f4e79' },
   // ],
+  // Cumpleaños (estos son los valores por defecto). enabled: false los apaga por completo.
+  // birthdays: { enabled: true, celebration: true, soonDays: 3 },
 }
 
 export default demo

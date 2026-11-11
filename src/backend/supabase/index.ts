@@ -34,7 +34,14 @@ const toUser = (row: any): User => ({
   roleId: row.role_id,
   active: row.active,
   mustChangePassword: row.must_change_password,
+  birthday: row.birthday ?? null,
+  photo: row.photo_path ?? null,
 })
+
+const AVATARS_BUCKET = 'avatars'
+
+/** Direcciones firmadas de las fotos (valen una hora), para no pedir una cada vez que se muestran. */
+const photoUrls = new Map<string, { url: string; expires: number }>()
 
 const toDocument = (row: any): IntranetDocument => ({
   id: row.id,
@@ -152,6 +159,10 @@ export function createSupabaseBackend(): Backend {
         }
         unwrap(await supabase.rpc('complete_password_change'), 'La contraseña cambió, pero no se pudo registrar. Vuelve a ingresar.')
       },
+
+      async setMyBirthday(birthday) {
+        unwrap(await supabase.rpc('set_my_birthday', { value: birthday ?? '' }), 'No se pudo guardar tu cumpleaños.')
+      },
     },
 
     users: {
@@ -168,7 +179,7 @@ export function createSupabaseBackend(): Backend {
         const row = unwrap(
           await supabase
             .from('profiles')
-            .update({ full_name: patch.fullName.trim(), role_id: patch.roleId, active: patch.active })
+            .update({ full_name: patch.fullName.trim(), role_id: patch.roleId, active: patch.active, birthday: patch.birthday || null })
             .eq('id', id)
             .select()
             .single(),
@@ -180,6 +191,43 @@ export function createSupabaseBackend(): Backend {
       async resetPassword(id) {
         const result = await adminUsers<{ temporaryPassword: string }>({ action: 'resetPassword', userId: id })
         return result.temporaryPassword
+      },
+
+      async setPhoto(id, photo) {
+        const { data: auth } = await supabase.auth.getUser()
+        const current = unwrap(await supabase.from('profiles').select('photo_path').eq('id', id).single(), 'El usuario ya no existe.')
+        let path: string | null = null
+        if (photo) {
+          // Nombre nuevo en cada cambio: así nadie ve la foto anterior guardada en el navegador.
+          path = `${id}/${crypto.randomUUID()}.jpg`
+          const uploaded = await supabase.storage.from(AVATARS_BUCKET).upload(path, photo, { contentType: 'image/jpeg' })
+          if (uploaded.error) {
+            console.error(uploaded.error)
+            throw new BackendError('No se pudo subir la foto.')
+          }
+        }
+        // La propia foto se cambia con la función set_my_photo; la de otro, como gestor de usuarios.
+        const saved =
+          id === auth.user?.id
+            ? await supabase.rpc('set_my_photo', { path: path ?? '' })
+            : await supabase.from('profiles').update({ photo_path: path }).eq('id', id)
+        if (saved.error) {
+          if (path) await supabase.storage.from(AVATARS_BUCKET).remove([path])
+          throw toBackendError(saved.error, 'No se pudo guardar la foto.')
+        }
+        if (current.photo_path) await supabase.storage.from(AVATARS_BUCKET).remove([current.photo_path])
+        return toUser(unwrap(await supabase.from('profiles').select('*').eq('id', id).single(), 'No se pudo leer el usuario.'))
+      },
+
+      async photoUrl(user) {
+        if (!user.photo) return null
+        const cached = photoUrls.get(user.photo)
+        if (cached && cached.expires > Date.now()) return cached.url
+        const { data, error } = await supabase.storage.from(AVATARS_BUCKET).createSignedUrl(user.photo, 3600)
+        if (error || !data) return null
+        // Se renueva unos minutos antes de que venza.
+        photoUrls.set(user.photo, { url: data.signedUrl, expires: Date.now() + 55 * 60 * 1000 })
+        return data.signedUrl
       },
     },
 

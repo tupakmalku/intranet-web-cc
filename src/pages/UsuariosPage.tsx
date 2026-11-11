@@ -1,20 +1,26 @@
 import { useState } from 'react'
 import { backend } from '../backend/index.ts'
+import { birthdaySettings } from '../brand/index.ts'
+import Avatar from '../components/Avatar.tsx'
 import TemporaryPassword from '../components/TemporaryPassword.tsx'
 import Button from '../components/ui/Button.tsx'
 import ConfirmDialog from '../components/ui/ConfirmDialog.tsx'
 import Icon from '../components/ui/Icon.tsx'
 import StatusBadge from '../components/ui/StatusBadge.tsx'
 import { useSession } from '../context/auth.ts'
+import { useLayout } from '../context/layout.ts'
 import { useToast } from '../context/toasts.ts'
 import type { User } from '../domain/types.ts'
 import UsuarioForm from '../forms/UsuarioForm.tsx'
+import { formatBirthday } from '../lib/birthdays.ts'
 import { useQuery } from '../lib/useQuery.ts'
 
 /** Gestión de usuarios: crearlos, cambiar su rol, habilitarlos y restablecer contraseñas. */
 export default function UsuariosPage() {
   const session = useSession()
   const toast = useToast()
+  const { refreshBirthdays } = useLayout()
+  const withBirthday = birthdaySettings().enabled
   // Undefined: el formulario está cerrado. Null: se crea un usuario nuevo.
   const [editing, setEditing] = useState<User | null | undefined>(undefined)
   const [resetting, setResetting] = useState<User | null>(null)
@@ -43,6 +49,7 @@ export default function UsuariosPage() {
             <tr>
               <th>Usuario</th>
               <th>Rol</th>
+              {withBirthday && <th>Cumpleaños</th>}
               <th>Estado</th>
               <th>
                 <span className="sr-only">Acciones</span>
@@ -53,10 +60,16 @@ export default function UsuariosPage() {
             {users.map((user) => (
               <tr key={user.id} className={user.active ? '' : 'row-inactive'}>
                 <td>
-                  <span className="table-name-static">{user.fullName}</span>
-                  <small>{user.email}</small>
+                  <div className="user-cell">
+                    <Avatar user={user} size={38} />
+                    <div>
+                      <span className="table-name-static">{user.fullName}</span>
+                      <small>{user.email}</small>
+                    </div>
+                  </div>
                 </td>
                 <td>{roleName.get(user.roleId)}</td>
+                {withBirthday && <td>{user.birthday ? formatBirthday(user.birthday) : <small>Sin registrar</small>}</td>}
                 <td>
                   <StatusBadge active={user.active} />
                   {user.active && user.mustChangePassword && <small>Con contraseña temporal</small>}
@@ -100,6 +113,7 @@ export default function UsuariosPage() {
             toast(temporaryPassword ? 'Usuario creado' : 'Usuario guardado')
             if (temporaryPassword) setSecret({ userName: user.fullName, password: temporaryPassword })
             query.reload()
+            refreshBirthdays()
           }}
         />
       )}

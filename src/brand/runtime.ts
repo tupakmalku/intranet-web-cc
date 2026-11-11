@@ -12,11 +12,12 @@ import type { Brand, BrandColors, ProcessTone } from './types.ts'
  */
 
 /** Lo que puede traer brand.json: cualquier parte de la marca. */
-export type BrandOverride = Partial<Omit<Brand, 'colors' | 'logo' | 'typography' | 'shape'>> & {
+export type BrandOverride = Partial<Omit<Brand, 'colors' | 'logo' | 'typography' | 'shape' | 'birthdays'>> & {
   colors?: Partial<BrandColors>
   logo?: Brand['logo']
   typography?: Brand['typography']
   shape?: Brand['shape']
+  birthdays?: Brand['birthdays']
 }
 
 const TEXT_KEYS = ['appName', 'institution', 'shortName', 'slogan', 'motto'] as const
@@ -118,7 +119,16 @@ export function sanitizeBrandOverride(raw: unknown): BrandOverride {
     else warn('se ignoró "processTones": debe ser una lista de { band, text, accent? } con colores válidos.')
   }
 
-  const known = new Set<string>([...TEXT_KEYS, 'colors', 'logo', 'typography', 'shape', 'processTones', '$schema', '_comment'])
+  if (isRecord(raw.birthdays)) {
+    const isFlag = (v: unknown): v is boolean => typeof v === 'boolean'
+    override.birthdays = compact({
+      enabled: pick(raw.birthdays, 'enabled', isFlag, 'debe ser true o false'),
+      celebration: pick(raw.birthdays, 'celebration', isFlag, 'debe ser true o false'),
+      soonDays: pick(raw.birthdays, 'soonDays', (v): v is number => Number.isInteger(v) && (v as number) >= 0 && (v as number) <= 7, 'debe ser un número entero de 0 a 7'),
+    })
+  }
+
+  const known = new Set<string>([...TEXT_KEYS, 'colors', 'logo', 'typography', 'shape', 'processTones', 'birthdays', '$schema', '_comment'])
   for (const key of Object.keys(raw)) if (!known.has(key)) warn(`clave desconocida "${key}".`)
   return override
 }

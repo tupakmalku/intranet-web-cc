@@ -2,7 +2,7 @@ import type { CSSProperties } from 'react'
 import ambato from './institutions/ambato.ts'
 import demo from './institutions/demo.ts'
 import { loadBrandOverride, type BrandOverride } from './runtime.ts'
-import type { Brand, BrandColors, ProcessTone } from './types.ts'
+import type { BirthdaySettings, Brand, BrandColors, ProcessTone } from './types.ts'
 
 /**
  * Instituciones compiladas. Para agregar una: se crea su archivo en
@@ -51,6 +51,16 @@ function merge(base: Brand, override: BrandOverride): Brand {
     logo: { ...base.logo, ...override.logo },
     typography: { ...base.typography, ...override.typography },
     shape: { ...base.shape, ...override.shape },
+    birthdays: { ...base.birthdays, ...override.birthdays },
+  }
+}
+
+/** Configuración de cumpleaños de la institución activa, con los valores por defecto aplicados. */
+export function birthdaySettings(): Required<BirthdaySettings> {
+  return {
+    enabled: brand.birthdays?.enabled ?? true,
+    celebration: brand.birthdays?.celebration ?? true,
+    soonDays: Math.min(7, Math.max(0, Math.round(brand.birthdays?.soonDays ?? 3))),
   }
 }
 

@@ -70,6 +70,25 @@ Word se acepta solo en .docx: el formato .doc antiguo no se puede mostrar en el 
 - Cada usuario cambia su contraseña cuando quiera desde la cabecera (icono de llave).
 - Reglas: mínimo 10 caracteres, con mayúsculas, minúsculas y números (`src/lib/validation.ts`).
 
+### Fotos y cumpleaños
+
+- Cada usuario puede tener **foto de perfil** y **cumpleaños** (solo día y mes, sin año, para no exponer la edad).
+- Los registra quien gestiona usuarios (**Seguridad > Usuarios**), y cada persona los suyos desde **Mi perfil** (pulsando su foto en la cabecera).
+- La foto se recorta en cuadrado y se comprime a 512 px en el navegador antes de subirla (`src/lib/images.ts`).
+- **Celebración:** la primera vez del día que alguien ingresa, si hay cumpleaños hoy o en los próximos 3 días, se abre una ventana con confeti. Muestra las fotos de quienes cumplen hoy, con un botón *Enviar saludo* (abre el correo con el saludo escrito), y debajo, en «Se acercan · prepara algo lindo», a quienes cumplen en los próximos días. A quien cumple años lo felicita. No vuelve a aparecer ese día en ese navegador.
+- **Tarjeta del menú lateral:** reemplaza al eslogan, que sigue en la pantalla de ingreso. Muestra quién cumple hoy o los próximos cumpleaños, con sus fotos. Al pulsarla abre la celebración o la lista de los próximos 30 días.
+- El 29 de febrero se celebra el 28 en los años no bisiestos.
+- **Se configura por institución** (clave `birthdays` de la marca, compilada o en `brand.json`):
+
+  | Opción | Por defecto | Qué hace |
+  | --- | --- | --- |
+  | `enabled` | `true` | `false` apaga los cumpleaños: sin tarjeta (vuelve el eslogan al menú), sin celebración y sin el campo en Usuarios y en Mi perfil. Las fotos de perfil se mantienen. |
+  | `celebration` | `true` | `false`: la ventana no se abre sola; solo desde la tarjeta del menú. |
+  | `soonDays` | `3` | Días de anticipación (0 a 7) con que se avisan los próximos cumpleaños. `0`: solo los de hoy. |
+
+- En el modo de demostración hay compañeros ficticios con cumpleaños repartidos desde hoy y retratos ilustrados (no son fotos de personas reales).
+- En Supabase, las columnas `profiles.birthday` y `profiles.photo_path`, el bucket privado `avatars` y las funciones `set_my_birthday` y `set_my_photo` están en `supabase/migrations/20261201000200_birthdays_photos.sql`.
+
 ## Adaptarla a otra institución
 
 Toda la identidad visual es configurable: textos, logotipos, colores (de marca, neutros y de estado), tipografías, esquinas y los tonos del mapa de procesos. Ningún color ni tipografía está escrito en las pantallas: los estilos leen variables (`src/styles/tokens.css`) que se llenan con la marca activa. Solo son obligatorios los textos y los colores `primary`, `accent` y `onPrimary`; el resto tiene un valor por defecto, y los tonos claros y oscuros se derivan solos de los dos colores de marca.
@@ -101,6 +120,7 @@ Hay dos formas de definir la marca, y se pueden combinar:
 | `colors.danger`, `warning`, `success` (y sus `Soft`, `warningStrong`) | Colores de estado. Conviene no cambiarlos: rojo, ámbar y verde significan lo mismo en cualquier institución. |
 | `typography.body`, `headings`, `stylesheetUrl` | Familia del texto, de los títulos y la hoja que las carga (por ejemplo, Google Fonts). |
 | `shape.radius`, `shape.fieldRadius` | Radio de las esquinas de tarjetas y de campos y botones, en píxeles. |
+| `birthdays.enabled`, `birthdays.celebration`, `birthdays.soonDays` | Si la institución usa los cumpleaños, si la celebración se abre sola y con cuántos días de anticipación avisa. Ver *Fotos y cumpleaños*. |
 | `processTones` | Lista de tonos `{ band, text, accent }` para las bandas de macroprocesos de la intranet. Se usan en orden y se repiten. Por defecto: claro, oscuro y más claro, derivados de la marca. |
 
 ### Cooperativa Ambato

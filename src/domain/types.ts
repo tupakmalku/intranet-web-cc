@@ -28,6 +28,13 @@ export interface User {
   active: boolean
   /** Tiene una contraseña temporal y debe cambiarla antes de usar la aplicación. */
   mustChangePassword: boolean
+  /** Cumpleaños como MM-DD, sin año (no se guarda la edad). Null si no se registró. */
+  birthday: string | null
+  /**
+   * Clave de la foto de perfil, o null si no tiene. Es opaca: la pantalla
+   * obtiene la imagen con `backend.users.photoUrl`. Cambia al reemplazar la foto.
+   */
+  photo: string | null
 }
 
 export interface Session {

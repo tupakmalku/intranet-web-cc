@@ -1,5 +1,8 @@
 import { useState } from 'react'
 import { backend } from '../backend/index.ts'
+import { birthdaySettings } from '../brand/index.ts'
+import BirthdayField from '../components/BirthdayField.tsx'
+import PhotoField from '../components/PhotoField.tsx'
 import Checkbox from '../components/ui/Checkbox.tsx'
 import Field from '../components/ui/Field.tsx'
 import FormModal from '../components/ui/FormModal.tsx'
@@ -25,6 +28,8 @@ export default function UsuarioForm({ user, roles, isSelf, onSaved, onClose }: P
   const [email, setEmail] = useState(user?.email ?? '')
   const [roleId, setRoleId] = useState(user?.roleId ?? '')
   const [active, setActive] = useState(user?.active ?? true)
+  const [birthday, setBirthday] = useState(user?.birthday ?? null)
+  const [photo, setPhoto] = useState<Blob | null | undefined>(undefined)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const { saving, failure, submit } = useSubmit()
 
@@ -38,10 +43,14 @@ export default function UsuarioForm({ user, roles, isSelf, onSaved, onClose }: P
 
     await submit(async () => {
       if (user) {
-        onSaved(await backend.users.update(user.id, { fullName, roleId, active }))
+        let saved = await backend.users.update(user.id, { fullName, roleId, active, birthday })
+        if (photo !== undefined) saved = await backend.users.setPhoto(user.id, photo)
+        onSaved(saved)
       } else {
-        const created = await backend.users.create({ fullName, email: email.trim(), roleId })
-        onSaved(created.user, created.temporaryPassword)
+        const created = await backend.users.create({ fullName, email: email.trim(), roleId, birthday })
+        // La foto se sube cuando el usuario ya existe.
+        const saved = photo ? await backend.users.setPhoto(created.user.id, photo) : created.user
+        onSaved(saved, created.temporaryPassword)
       }
     })
   }
@@ -56,6 +65,7 @@ export default function UsuarioForm({ user, roles, isSelf, onSaved, onClose }: P
       onSubmit={handleSubmit}
       onClose={onClose}
     >
+      <PhotoField user={{ id: user?.id ?? '', fullName: fullName || '?', photo: user?.photo ?? null }} value={photo} onChange={setPhoto} />
       <Field
         id="user-name"
         label="Nombre completo"
@@ -90,6 +100,7 @@ export default function UsuarioForm({ user, roles, isSelf, onSaved, onClose }: P
         help={isSelf ? 'No puedes cambiar tu propio rol.' : roles.find((r) => r.id === roleId)?.description}
         disabled={isSelf}
       />
+      {birthdaySettings().enabled && <BirthdayField id="user-birthday" value={birthday} onChange={setBirthday} help="Opcional. Solo día y mes." />}
       {user && (
         <Checkbox
           label="Usuario habilitado"

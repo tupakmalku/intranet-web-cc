@@ -1,7 +1,11 @@
 import { useState } from 'react'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { backend } from '../backend/index.ts'
-import { brand } from '../brand/index.ts'
+import { birthdaySettings, brand } from '../brand/index.ts'
+import Avatar from '../components/Avatar.tsx'
+import BirthdayCard from '../components/birthdays/BirthdayCard.tsx'
+import BirthdayCelebration from '../components/birthdays/BirthdayCelebration.tsx'
+import BirthdayList from '../components/birthdays/BirthdayList.tsx'
 import BrandMark from '../components/BrandMark.tsx'
 import Icon, { type IconName } from '../components/ui/Icon.tsx'
 import Modal from '../components/ui/Modal.tsx'
@@ -10,6 +14,9 @@ import type { LayoutContext } from '../context/layout.ts'
 import { useToast } from '../context/toasts.ts'
 import type { Permission } from '../domain/types.ts'
 import CambioClaveForm from '../forms/CambioClaveForm.tsx'
+import PerfilForm from '../forms/PerfilForm.tsx'
+import { upcomingBirthdays } from '../lib/birthdays.ts'
+import { toIsoDate } from '../lib/dates.ts'
 import Button from '../components/ui/Button.tsx'
 import { useQuery } from '../lib/useQuery.ts'
 import { VIEW_PATHS } from './intranetViews.ts'
@@ -43,12 +50,28 @@ const SECTIONS: Section[] = [
   { path: '/seguridad', title: 'Seguridad', menu: 'Seguridad', icon: 'shield', permission: ['users.manage', 'roles.manage'] },
 ]
 
-const initials = (name: string) =>
-  name
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((word) => word[0]?.toUpperCase())
-    .join('')
+/** Días hacia adelante que cubren la tarjeta y la lista de cumpleaños. */
+const BIRTHDAY_WINDOW = 30
+
+
+/** Fecha (AAAA-MM-DD) en que el usuario vio la celebración por última vez, guardada en este navegador. */
+const celebrationKey = (userId: string) => `intranet.celebration.${userId}`
+
+function celebrationSeenToday(userId: string): boolean {
+  try {
+    return localStorage.getItem(celebrationKey(userId)) === toIsoDate(new Date())
+  } catch {
+    return false
+  }
+}
+
+function markCelebrationSeen(userId: string): void {
+  try {
+    localStorage.setItem(celebrationKey(userId), toIsoDate(new Date()))
+  } catch {
+    // Sin almacenamiento (navegación privada): la celebración puede volver a salir; no es grave.
+  }
+}
 
 /** Estructura de la aplicación: menú lateral, cabecera con el usuario y el contenido de cada sección. */
 export default function AppLayout() {
@@ -59,6 +82,30 @@ export default function AppLayout() {
   const navigate = useNavigate()
   const [changingPassword, setChangingPassword] = useState(false)
   const [topbarSlot, setTopbarSlot] = useState<HTMLElement | null>(null)
+  const [birthdaysVersion, setBirthdaysVersion] = useState(0)
+  const [openedView, setOpenedView] = useState<'celebration' | 'list' | 'profile' | null>(null)
+  // La celebración se abre sola la primera vez del día que el usuario entra, si alguien cumple años.
+  const [celebrationPending, setCelebrationPending] = useState(() => !celebrationSeenToday(user.id))
+
+  // Compañeros con su cumpleaños y foto. Se vuelve a leer al cambiar el propio perfil o al editar usuarios.
+  const people = useQuery(() => backend.users.list(), [birthdaysVersion, user.birthday, user.photo])
+  const upcoming = people.data ? upcomingBirthdays(people.data.filter((u) => u.active), new Date(), BIRTHDAY_WINDOW) : []
+  const todays = upcoming.filter((p) => p.days === 0)
+  // Lo que usa la institución (src/brand: birthdays). Apagados, no se muestra nada de cumpleaños.
+  const birthdays = birthdaySettings()
+  const soon = upcoming.filter((p) => p.days > 0 && p.days <= birthdays.soonDays)
+  const hasCelebration = todays.length > 0 || soon.length > 0
+
+  const birthdayView = openedView ?? (birthdays.enabled && birthdays.celebration && celebrationPending && hasCelebration ? 'celebration' : null)
+
+  /** Cambia la ventana de cumpleaños abierta. Al dejar la celebración se recuerda que ya se vio hoy. */
+  function setBirthdayView(view: typeof openedView) {
+    if (birthdayView === 'celebration' && celebrationPending) {
+      setCelebrationPending(false)
+      markCelebrationSeen(user.id)
+    }
+    setOpenedView(view)
+  }
 
   // Contadores del menú. La intranet pide recontarlos (refreshCounts) cada vez que cambia un documento.
   const canPublish = can('documents.publish')
@@ -128,9 +175,18 @@ export default function AppLayout() {
             )
           })}
         </nav>
-        <div className="sidebar-footer">
-          <p className="sidebar-slogan">{brand.slogan}</p>
-        </div>
+        {/* Con cumpleaños, su tarjeta va donde iba el eslogan (que sigue en la pantalla de ingreso). */}
+        {birthdays.enabled ? (
+          people.data && (
+            <div className="sidebar-footer">
+              <BirthdayCard upcoming={upcoming} me={user} onOpen={() => setBirthdayView(hasCelebration ? 'celebration' : 'list')} />
+            </div>
+          )
+        ) : (
+          <div className="sidebar-footer">
+            <p className="sidebar-slogan">{brand.slogan}</p>
+          </div>
+        )}
       </aside>
 
       <div className="main">
@@ -143,9 +199,9 @@ export default function AppLayout() {
               <strong>{user.fullName}</strong>
               <small>{role.name}</small>
             </span>
-            <span className="avatar" aria-hidden="true">
-              {initials(user.fullName)}
-            </span>
+            <button type="button" className="avatar-button" onClick={() => setBirthdayView('profile')} aria-label="Mi perfil: foto y cumpleaños" title="Mi perfil">
+              <Avatar user={user} size={42} />
+            </button>
             <button
               type="button"
               className="icon-button"
@@ -161,9 +217,25 @@ export default function AppLayout() {
           </div>
         </header>
         <main className="content">
-          <Outlet context={{ topbarSlot, refreshCounts: counts.reload } satisfies LayoutContext} />
+          <Outlet context={{ topbarSlot, refreshCounts: counts.reload, refreshBirthdays: () => setBirthdaysVersion((v) => v + 1) } satisfies LayoutContext} />
         </main>
       </div>
+
+      {birthdayView === 'celebration' && (
+        <BirthdayCelebration people={todays} soon={soon} me={user} onMore={() => setBirthdayView('list')} onClose={() => setBirthdayView(null)} />
+      )}
+      {birthdayView === 'list' && (
+        <BirthdayList upcoming={upcoming} days={BIRTHDAY_WINDOW} me={user} onProfile={() => setBirthdayView('profile')} onClose={() => setBirthdayView(null)} />
+      )}
+      {birthdayView === 'profile' && (
+        <PerfilForm
+          onClose={() => setBirthdayView(null)}
+          onDone={() => {
+            setBirthdayView(null)
+            toast('Perfil guardado')
+          }}
+        />
+      )}
 
       {changingPassword && (
         <Modal title="Cambiar mi contraseña" onClose={() => setChangingPassword(false)}>

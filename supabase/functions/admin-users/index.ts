@@ -41,6 +41,8 @@ Deno.serve(async (request) => {
     const email = String(body.email ?? '').trim().toLowerCase()
     const fullName = String(body.fullName ?? '').trim()
     if (!email || !fullName || !body.roleId) return json({ error: 'Faltan datos del usuario.' }, 400)
+    // Cumpleaños opcional, MM-DD; la base de datos valida además que el día exista en el mes.
+    const birthday = typeof body.birthday === 'string' && /^\d{2}-\d{2}$/.test(body.birthday) ? body.birthday : null
 
     const password = temporaryPassword()
     const created = await admin.auth.admin.createUser({ email, password, email_confirm: true })
@@ -51,7 +53,7 @@ Deno.serve(async (request) => {
 
     const profile = await admin
       .from('profiles')
-      .insert({ id: created.data.user.id, email, full_name: fullName, role_id: body.roleId })
+      .insert({ id: created.data.user.id, email, full_name: fullName, role_id: body.roleId, birthday })
       .select()
       .single()
     if (profile.error) {

@@ -106,4 +106,20 @@ export interface Brand {
 
   /** Tonos del mapa de procesos. Por defecto: claro (acento), oscuro (principal) y más claro (principal suave). */
   processTones?: ProcessTone[]
+
+  /** Cumpleaños. Por defecto, todo activo con 3 días de anticipación. */
+  birthdays?: BirthdaySettings
+}
+
+/** Qué partes de los cumpleaños usa la institución. Las fotos de perfil no dependen de esto. */
+export interface BirthdaySettings {
+  /**
+   * false apaga los cumpleaños por completo: sin tarjeta en el menú (vuelve el
+   * eslogan), sin celebración y sin el campo en Usuarios y en Mi perfil.
+   */
+  enabled?: boolean
+  /** Abrir sola la ventana de celebración una vez al día. Con false, solo se abre desde la tarjeta del menú. */
+  celebration?: boolean
+  /** Días de anticipación (0 a 7) con que se avisan los próximos cumpleaños. 0: solo los de hoy. */
+  soonDays?: number
 }
